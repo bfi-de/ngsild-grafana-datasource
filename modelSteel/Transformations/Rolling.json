@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Rolling.json",
+    "title": "Rolling",
+    "description": "CAPRI model for rolling.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/ShapeTransformation",
+    "allOf": [
+        {
+            "$ref": "./ShapeTransformation.json"
+        }]
+
+}

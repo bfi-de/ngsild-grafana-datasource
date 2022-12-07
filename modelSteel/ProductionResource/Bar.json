@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Bar.json",
+    "title": "Bar",
+    "description": "CAPRI model for a steel bar",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/Item",
+    "allOf": [
+        {
+            "$ref": "./Item.json"
+        },
+        {
+        "properties": {
+            "ordernumber": { "type": "string", "´description": "Identifier for a batch of products belonging to the same customer order. TODO use reference instead?" },
+            "barId": { "type": "string", "description": "Internal product id" },
+            "barTrackingCode": { "type": "string" },
+            "billetTrackingCode": { "type": "string", "description": "The tracking code of the semi-product this bar is made from, if it has been identified. Note that this data may be faulty." },
+            "dateObserved": { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/dateObserved" },
+            "length": { "type": "number", "description": "Targeted bar length in mm. Model:'https://schema.org/height'."},
+            "overallQualityRating": { "type": "string", "description": "Company internal quality code" }
+        } 
+    }]
+    ,
+    "required": [
+        "barId",
+        "dateObserved"
+    ]
+
+}

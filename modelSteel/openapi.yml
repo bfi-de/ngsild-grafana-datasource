@@ -1,0 +1,130 @@
+openapi: "3.0.1"
+
+info:
+  description:  |
+    CAPRI steel model (experimental)
+  title: Steel production
+  version: "0.0.1"
+  
+components:
+  schemas:
+    # Generic model
+    Area:
+      $ref: "./Area.json"
+    Batch:
+      $ref: "./ProductionResource/Batch.json"
+    BuildingSpace:
+      $ref: "./BuildingSpace.json"
+    Factory:
+      $ref: "./Factory.json"
+    FeatureOfInterest:
+      $ref: "./FeatureOfInterest.json"
+    Item:
+      $ref: "./ProductionResource/Item.json"
+    ItemBatch:
+      $ref: "./ProductionResource/ItemBatch.json"
+    MaterialBatch:
+      $ref: "./ProductionResource/MaterialBatch.json"
+    ProductionEquipment:
+      $ref: "./ProductionEquipment.json"
+    ProductionResource:
+      $ref: "./ProductionResource.json"
+    Site:
+      $ref: "./Site.json"
+    Transformation:
+      $ref: "./Transformation.json"
+    WorkSpace:
+      $ref: "./ProductionEquipment/WorkSpace.json"
+    # Steel-specific stuff below
+    # ProductionResources
+    Bar:
+      $ref: "./ProductionResource/Bar.json"
+    Billet:
+      $ref: "./ProductionResource/Billet.json"
+    Bloom:
+      $ref: "./ProductionResource/Bloom.json"
+    Coil:
+      $ref: "./ProductionResource/Coil.json"
+    LadleHeat:
+      $ref: "./ProductionResource/LadleHeat.json"
+    Slab:
+      $ref: "./ProductionResource/Slab.json"
+    # ProductionEquipment
+    CastingStrand:
+      $ref: "./ProductionEquipment/CastingStrand.json"
+    Coiler:
+      $ref: "./ProductionEquipment/Coiler.json"
+    CoolingBed:
+      $ref: "./ProductionEquipment/CoolingBed.json"
+    ContinuousCastingMachine:
+      $ref: "./ProductionEquipment/ContinuousCastingMachine.json"
+    Cutter:
+      $ref: "./ProductionEquipment/Cutter.json"
+    Decoiler:
+      $ref: "./ProductionEquipment/Decoiler.json"
+    Descaler:
+      $ref: "./ProductionEquipment/Descaler.json"
+    FinishingLine:
+      $ref: "./ProductionEquipment/FinishingLine.json"
+    Furnace:
+      $ref: "./ProductionEquipment/Furnace.json"
+    HotRollingMill:
+      $ref: "./ProductionEquipment/HotRollingMill.json"
+    RollingMill:
+      $ref: "./ProductionEquipment/RollingMill.json"
+    Shears:
+      $ref: "./ProductionEquipment/Shears.json"    
+    Storage:
+      $ref: "./ProductionEquipment/Storage.json"
+    Yard:
+      $ref: "./ProductionEquipment/Yard.json"
+    # Transformations
+    Coating:
+      $ref: "./Transformations/Coating.json"
+    ComplexTransformation:
+      $ref: "./Transformations/ComplexTransformation.json"
+    Cooling:
+      $ref: "./Transformations/Cooling.json"
+    Cutting:
+      $ref: "./Transformations/Cutting.json"
+    Descaling:
+      $ref: "./Transformations/Descaling.json"
+    Heating:
+      $ref: "./Transformations/Heating.json"
+    Rolling:
+      $ref: "./Transformations/Rolling.json"
+    ShapeTransformation:
+      $ref: "./Transformations/ShapeTransformation.json"
+    SurfaceTreatment:
+      $ref: "./Transformations/SurfaceTreatment.json"
+    TemperatureTransformation:
+      $ref: "./Transformations/TemperatureTransformation.json"
+     
+paths: 
+  /ngsi-ld/v1/entities: 
+    get: 
+      description: "Retrieve a set of entities which matches a specific query from an NGSI-LD system"
+      parameters: 
+        - 
+          in: query
+          name: type
+          required: true
+          schema: 
+          #  enum: 
+          #    - ProductionResource
+          #    - Batch
+          #    - MaterialBatch
+          #    - LadleHeat
+          #    
+            type: string
+      responses: 
+        200:
+          content: 
+            application/ld+json: 
+          description: OK
+      tags: 
+        - ngsi-ld
+tags: 
+  - 
+    description: "NGSI-LD Linked-data Format"
+    name: ngsi-ld

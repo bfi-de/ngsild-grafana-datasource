@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Transformation.json",
+    "title": "Transformation",
+    "description": "Model for transformations applied by a machine to some item(s). Used only for properties of the relationship processedBy on ProductionResources.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "TODO": "this looks incomplete..."
+}

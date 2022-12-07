@@ -1,0 +1,29 @@
+version: "3.5"
+
+services:
+
+    grafana:
+        image: grafana/grafana:latest
+        container_name: grafana
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./plugin/dist:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro
+            - ./volumes/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+            - ./volumes/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+            - ./volumes/dashboards:/var/lib/grafana/dashboards:ro
+        environment:
+            - GF_PATHS_PLUGINS=/var/lib/grafana/plugins
+            # dev setting: allow unsigned plugins; comma separated list of plugins
+            - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource
+            # dev settings => disable authentication
+            - GF_AUTH_ANONYMOUS_ENABLED=true
+            - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+            - GF_SERVER_DOMAIN=localhost
+            - BROKER_URL=${BROKER_URL:-http://host.docker.internal:1026}
+            - CONTEXT_URL=${CONTEXT_URL:-http://host.docker.internal:3004/ngsi-context.jsonld}
+            - TIMESERIES_URL=${TIMESERIES_URL:-http://host.docker.internal:8083}
+            - TOKEN_URL=${TOKEN_URL}
+            - CLIENT_ID=${CLIENT_ID}
+            - CLIENT_SECRET=${CLIENT_SECRET}
+            #- GF_SERVER_SERVE_FROM_SUB_PATH=true

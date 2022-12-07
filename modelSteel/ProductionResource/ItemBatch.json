@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/ItemBatch.json",
+    "title": "ItemBatch",
+    "description": "Production item batches",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/Batch",
+    "allOf": [
+        { "$ref": "./Batch.json" },
+        {
+            "properties": {
+                "creates": {
+                    "type": "array",
+                    "items": {
+                        "type": "string", 
+                        "format": "uri",
+                        "x-ref-type": "Item"
+                    },
+                    "description": "References to the items that are created as part of this batch." 
+                }
+            }
+        }
+    ]
+}

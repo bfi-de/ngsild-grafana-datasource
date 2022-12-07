@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "NGSI-LD datasource",
+  "id": "ngsild-grafana-datasource",
+  "metrics": true,
+  "info": {
+    "description": "A datasource plugin for NGSI-LD context brokers",
+    "author": {
+      "name": "Christoph Nölle",
+      "url": "https://www.bfi.de"
+    },
+    "keywords": ["ngsild", "fiware", "context"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/grafana/grafana-starter-datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/grafana/grafana-starter-datasource/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "routes": [
+    {
+      "path": "temporal",
+      "method": "GET",
+      "url": "{{.JsonData.timeseriesUrl}}",
+      "tokenAuth": {
+        "url": "{{.JsonData.tokenUrl}}",
+        "params": {
+          "grant_type": "client_credentials",
+          "client_id": "{{ .SecureJsonData.clientId }}",
+          "client_secret": "{{ .SecureJsonData.clientSecret }}"
+        }
+      }
+    },
+    {
+      "path": "",
+      "method": "GET",
+      "tokenAuth": {
+        "url": "{{.JsonData.tokenUrl}}",
+        "params": {
+          "grant_type": "client_credentials",
+          "client_id": "{{ .SecureJsonData.clientId }}",
+          "client_secret": "{{ .SecureJsonData.clientSecret }}"
+        }
+      }
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=7.0.0",
+    "plugins": []
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "ngsild-grafana-datasource",
+        "uid": "ngsild_1"
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "targets": [
+        {
+          "arcColorComplementLabel": "sucessRate",
+          "arcColorNodeAttributes": {
+            "": [
+              "defectRate"
+            ]
+          },
+          "attributes": [
+            "isPartOf"
+          ],
+          "datasource": {
+            "type": "ngsild-grafana-datasource",
+            "uid": "ngsild_1"
+          },
+          "entityType": "CastingStrand",
+          "primaryArcColor": "#F2495C",
+          "primaryNodeAttributes": {
+            "": [
+              "strandNumber",
+              "steelTemperatureTundish"
+            ]
+          },
+          "queryType": "nodegraph",
+          "refId": "A",
+          "secondaryArcColor": "#73BF69"
+        }
+      ],
+      "title": "Casting strands",
+      "type": "nodeGraph"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Nodes sample",
+  "uid": "nodes-sample",
+  "version": 1,
+  "weekStart": ""
+}

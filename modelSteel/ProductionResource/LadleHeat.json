@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/LadleHeat.json",
+    "title": "LadleHeat",
+    "description": "CAPRI model for a heat, i.e. a batch of liquid steel for processing in a casting machine.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/MaterialBatch",
+    "allOf": [
+        {
+            "$ref": "./MaterialBatch.json"
+        },
+        {
+            "$ref": "./SecondaryMetallurgy.json"
+        },
+        {
+        "properties": {
+            "heatnumber": { "type": "string" },
+            "dateObserved": { "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/dateObserved" },
+            "type": { "type": "string" },
+            "grade": { "type": "string", "description": "A code identifying the steel grade" },
+            "heatsPerSequence": { "type": "integer", "minimum": 1, "description": "Total number of heats in the sequence" },
+            "heatInSequence": { "type": "integer", "minimum": 1, "description": "Ordinal of heat in sequence" },
+            "heatTypeInSequence": { "type": "string", "enum": ["SEQUENCE_START", "CONTINUATION", "GRADE_CHANGE"]  }
+        }
+    }]
+    ,
+    "required": [
+        "id",
+        "dateObserved",
+        "heatnumber",
+        "type"
+    ]
+
+}

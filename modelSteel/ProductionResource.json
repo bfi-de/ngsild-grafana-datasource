@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/ProductionResource.json",
+    "title": "ProductionResource",
+    "description": "SAREF4INMA model for production resources.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/FeatureOfInterest",
+    "allOf": [{
+            "$ref": "./FeatureOfInterest.json"
+        },
+        { 
+            "properties": {
+                "consistsOfMaterial": { "type": "string", "format": "uri", "x-ref-type": "MaterialCategory", "description": "The material a product consists of" },
+                "processedBy": { 
+                    "type": "array",
+                    "items": {
+                        "type": "string", 
+                        "format": "uri",
+                        "x-ref-type": "ProductionEquipment"
+                    },
+                    "description": "A reference to the machine(s) that processed this product" 
+                },
+                "actualComposition": {
+                    "$ref": "./ChemicalComposition.json" 
+                },
+                "madeFrom": {
+                    "type": "string", 
+                    "format": "uri",
+                    "x-ref-type": "ProductionResource",
+                    "description": "A reference to the product this one is made from" 
+                },
+                "identifiedWithPrevious": {
+                    "type": "array",
+                    "items": {
+                        "type": "string", 
+                        "format": "uri",
+                        "x-ref-type": "ProductionResource"
+                    },
+                    "description": "A reference to products this one is identified with. Their processedBy relationships references earlier processing steps than this one's." 
+                }
+            }
+        }
+                
+    ]
+}

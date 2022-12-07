@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/ContinuousCastingMachine.json",
+    "title": "ContinuousCastingMachine",
+    "description": "CAPRI model for a continuous casting machine.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/ProductionEquipment",
+    "allOf": [
+        {
+            "$ref": "../ProductionEquipment.json"
+        },{
+            "properties": {
+                "type": { "type": "string"},
+                "strands": { "type": "integer", "description": "The number of parallel casting strands" },
+                "steelTemperatureTundish": { "type": "number", "format": "float", "description": "Steel temperature in the tundish" }
+            }
+        }
+    ],
+    "required": [
+        "id",
+        "type",
+        "strands"
+    ]
+
+}

@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/SecondaryMetallurgy.json",
+    "title": "CAPRI model for the secondary metallurgical treatment of liquid steel",
+    "description": "CAPRI model for the secondary metallurgical treatment of liquid steel.",
+    "type": "object",
+    "properties": {
+        "deoxSi": { "type": "number", "format": "float", "description": "Ferro Silicon used for deoxidation. Unit: kg." },
+        "deoxSiC": { "type": "number", "format": "float", "description": "Silicon Carbon used for deoxidation. Unit: kg." },
+        "deoxSiMn": { "type": "number", "format": "float", "description": "Silicon Manganese used for deoxidation. Unit: kg." },
+        "deoxAl": { "type": "number", "format": "float", "description": "Aluminium used for deoxidation. Unit: kg." },
+        "stirringDurationAfterVacuum": { "type": "number", "description": "Stirring duration", "comment": "how to model durations?" },
+        "vacuumDegasDuration": { "type": "number", "description": "Vacuum degassing duration" }
+    }
+}

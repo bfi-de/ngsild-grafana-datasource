@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/BuildingSpace.json",
+    "title": "BuildingSpace",
+    "description": "SAREF4BLDG model for a building space.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "properties": {
+        "id": { "type": "string"},
+        "type": { "type": "string"},
+        "isSubspace": {
+            "type": "string", 
+            "format": "uri",
+            "x-ref-type": "BuildingSpace",
+            "description": "The parent space"
+        }
+    },
+    "required": [
+        "id",
+        "type"
+    ]
+
+}

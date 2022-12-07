@@ -1,0 +1,250 @@
+[
+    {
+        "id": "urn:ngsi-ld:Factory:SteelMill1",
+        "type": "Factory",
+        "description": {
+            "type": "Property",
+            "value": "Sample steel mill1"
+        },
+        "productionCapacity": {
+            "type": "Property",
+            "value": 210000,
+            "unitCode": "M89",
+            "commodity": {
+                "type": "Property",
+                "value": "steel"
+            }
+        },
+        "location": {
+            "type": "GeoProperty",
+            "value": {
+                "type": "Point",
+                "coordinates": [
+                    5.875734,
+                    51.478373
+                ]
+            }
+        }
+    },{
+        "id": "urn:ngsi-ld:Factory:SteelMill2",
+        "type": "Factory",
+        "description": {
+            "type": "Property",
+            "value": "Sample steel mill2"
+        },
+        "productionCapacity": {
+            "type": "Property",
+            "value": 358000,
+            "unitCode": "M89",
+            "commodity": {
+                "type": "Property",
+                "value": "steel"
+            }
+        },
+        "location": {
+            "type": "GeoProperty",
+            "value": {
+                "type": "Point",
+                "coordinates": [
+                    5.337758,
+                    51.174322
+                ]
+            }
+        }
+    },{
+        "id": "urn:ngsi-ld:Factory:SteelMill3",
+        "type": "Factory",
+        "description": {
+            "type": "Property",
+            "value": "Sample steel mill3"
+        },
+        "productionCapacity": {
+            "type": "Property",
+            "value": 255000,
+            "unitCode": "M89",
+            "commodity": {
+                "type": "Property",
+                "value": "steel"
+            }
+        },
+        "location": {
+            "type": "GeoProperty",
+            "value": {
+                "type": "Point",
+                "coordinates": [
+                    6.202593,
+                    50.978039
+                ]
+            }
+        }
+    },{
+        "id": "urn:ngsi-ld:Factory:SteelMill4",
+        "type": "Factory",
+        "description": {
+            "type": "Property",
+            "value": "Sample steel mill4"
+        },
+        "productionCapacity": {
+            "type": "Property",
+            "value": 195000,
+            "unitCode": "M89",
+            "commodity": {
+                "type": "Property",
+                "value": "steel"
+            }
+        },
+        "location": {
+            "type": "GeoProperty",
+            "value": {
+                "type": "Point",
+                "coordinates": [
+                    5.809627,
+                    50.886529
+                ]
+            }
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:ContinuousCastingMachine:ContinuousCastingMachine1",
+        "type": "ContinuousCastingMachine",
+        "description": {
+            "type": "Property",
+            "value": "Sample steel casting machine"
+        },
+        "strands": {
+            "type": "Property",
+            "value": 3
+        },
+        "steelTemperatureTundish": {
+            "type": "Property",
+            "value": 1350,
+            "unitCode": "CEL"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:CastingStrand:CastingStrand1",
+        "type": "CastingStrand",
+        "description": {
+            "type": "Property",
+            "value": "A casting strand"
+        },
+        "isPartOf": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:ContinuousCastingMachine:ContinuousCastingMachine1"
+        },
+        "strandNumber": {
+            "type": "Property",
+            "value": 1
+        },
+        "defectRate": {
+            "type": "Property",
+            "value": 0.143,
+            "unitCode": "C62"
+        },
+        "castingVelocity": {
+            "type": "Property",
+            "value": 0,
+            "unitCode": "2X"
+        },
+        "mouldWaterTemperatureDifference": {
+            "type": "Property",
+            "value": 0,
+            "unitCode": "KEL"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:CastingStrand:CastingStrand2",
+        "type": "CastingStrand",
+        "description": {
+            "type": "Property",
+            "value": "A casting strand"
+        },
+        "strandNumber": {
+            "type": "Property",
+            "value": 2
+        },
+        "isPartOf": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:ContinuousCastingMachine:ContinuousCastingMachine1"
+        },
+        "defectRate": {
+            "type": "Property",
+            "value": 0.0934,
+            "unitCode": "C62"
+        },
+        "castingVelocity": {
+            "type": "Property",
+            "value": 0,
+            "unitCode": "2X"
+        },
+        "mouldWaterTemperatureDifference": {
+            "type": "Property",
+            "value": 0,
+            "unitCode": "KEL"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:CastingStrand:CastingStrand3",
+        "type": "CastingStrand",
+        "description": {
+            "type": "Property",
+            "value": "A casting strand"
+        },
+        "strandNumber": {
+            "type": "Property",
+            "value": 3
+        },
+        "isPartOf": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:ContinuousCastingMachine:ContinuousCastingMachine1"
+        },
+        "defectRate": {
+            "type": "Property",
+            "value": 0.218,
+            "unitCode": "C62"
+        },
+        "castingVelocity": {
+            "type": "Property",
+            "value": 0,
+            "unitCode": "2X"
+        },
+        "mouldWaterTemperatureDifference": {
+            "type": "Property",
+            "value": 0,
+            "unitCode": "KEL"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:HotRollingMill:HotRollingMill1",
+        "type": "HotRollingMill"
+    },
+    {
+        "id": "urn:ngsi-ld:Furnace:ReheatingFurnace1",
+        "type": "Furnace",
+        "description": {
+            "type": "Property",
+            "value": "Reheating furnace for the hot rolling mill"
+        },
+        "isPartOf": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:HotRollingMill:HotRollingMill1"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:RollingMill:RoughingMill1",
+        "type": "RollingMill",
+        "isPartOf": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:HotRollingMill:HotRollingMill1"
+        }
+    },
+    {
+        "id": "urn:ngsi-ld:Cutter:Cutter1",
+        "type": "Cutter",
+        "isPartOf": {
+            "type": "Relationship",
+            "object": "urn:ngsi-ld:HotRollingMill:HotRollingMill1"
+        }
+    }
+
+]

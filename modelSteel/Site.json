@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Site.json",
+    "title": "Site",
+    "description": "SAREF4BLDG model for a site.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/BuildingSpace",
+    "allOf": [
+        {
+            "$ref": "./BuildingSpace.json"
+        }
+    ]
+}

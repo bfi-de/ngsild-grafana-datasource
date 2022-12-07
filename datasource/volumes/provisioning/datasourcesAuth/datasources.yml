@@ -1,0 +1,35 @@
+apiVersion: 1
+
+# see https://grafana.com/docs/grafana/latest/administration/provisioning/
+datasources:
+  - name: NGSI-LD
+    version: 1
+    orgId: 1
+    uid: ngsild_1
+    type: ngsild-grafana-datasource
+    typeLogoUrl: public/plugins/ngsild-grafana-datasource/img/logo.svg
+    # proxy or direct
+    access: proxy
+    url: $BROKER_URL
+    # <string> database user, if used
+    user:
+    # <string> database name, if used
+    database:
+    basicAuth: false
+    basicAuthUser: dummy
+    withCredentials: false
+    isDefault: true
+    jsonData:
+      contextUrl: $CONTEXT_URL
+      timeseriesUrl: $TIMESERIES_URL
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: false
+      httpMode: POST
+      httpHeaderName1: 'Access-Token'
+      authType: oauth
+      tokenUrl: $TOKEN_URL
+    secureJsonData:
+      clientId: $CLIENT_ID
+      clientSecret: $CLIENT_SECRET
+    editable: true

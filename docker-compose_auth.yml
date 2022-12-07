@@ -1,0 +1,136 @@
+version: "3"
+# based on
+# https://github.com/FIWARE/tutorials.Securing-Access/blob/master/docker-compose.yml
+
+services:
+
+  mysql:
+    restart: always
+    image: mysql:latest
+    container_name: mysql
+    expose:
+      - "${MYSQL_DB_PORT:-3306}"
+    #ports:  # might be relevant for debugging
+    #  - "${MYSQL_DB_PORT:-3306}:${MYSQL_DB_PORT:-3306}"
+    networks:
+      - mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./volumes/mysql-data:/docker-entrypoint-initdb.d/:ro # Preload Keyrock Users and apps
+
+      
+  # db administration tool for mysql, just for convenience
+  # Frontend: http://localhost:8080/?server=mysql&username=root&db=idm PW: "secret"
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:  # might be relevant for debugging
+      - "${ADMINER_PORT:-8080}:8080"
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - ADMINER_DEFAULT_SERVER=mysql
+    networks:
+      - mysql
+
+  # Keyrock is an Identity Management Front-End
+  keyrock:
+    image: fiware/idm:latest   # this is the FIWARE Keyrock generic enabler
+    container_name: keyrock
+    depends_on:
+      - mysql
+    ports:
+      - "${KEYROCK_PORT:-3005}:${KEYROCK_PORT:-3005}" # localhost:3005
+      #- "${KEYROCK_HTTPS_PORT}:${KEYROCK_HTTPS_PORT}" # localhost:3443
+    networks:
+      - mysql
+      - orion
+      - mintaka
+    environment:
+      - DEBUG=idm:*
+      - IDM_DB_HOST=mysql
+      - IDM_DB_PASS=secret
+      - IDM_DB_USER=root
+      - IDM_HOST=http://keyrock:${KEYROCK_PORT:-3005}
+      - IDM_PORT=${KEYROCK_PORT:-3005}
+      - IDM_HTTPS_ENABLED=${IDM_HTTPS_ENABLED:-false}
+      - IDM_HTTPS_PORT=${KEYROCK_HTTPS_PORT:-3443}
+      - IDM_ADMIN_USER=alice
+      - IDM_ADMIN_EMAIL=alice-the-admin@test.com
+      - IDM_ADMIN_PASS=test
+      - IDM_CSP_FORM_ACTION=*
+    healthcheck:
+      interval: 15s
+  
+  # proxy for the context broker
+  wilma-orion:
+    image: fiware/pep-proxy:8.3.0  # this is the FIWARE Wilma generic enabler # note that this is always shown in unhealthy state; latest is based on a distroless version
+    container_name: wilma-orion
+    networks:
+      - orion
+    depends_on:
+      - keyrock
+    #ports:  # might be relevant for debugging
+    #  - "1027:1027"
+    expose:
+      - "1027"
+    environment:
+      - PEP_PROXY_APP_HOST=orion
+      - PEP_PROXY_APP_PORT=1026
+      - PEP_PROXY_PORT=1027
+      - PEP_PROXY_IDM_HOST=keyrock
+      - PEP_PROXY_IDM_PORT=${KEYROCK_PORT:-3005}
+      - PEP_PROXY_HTTPS_ENABLED=false
+      - PEP_PROXY_AUTH_ENABLED=false
+      - PEP_PROXY_IDM_SSL_ENABLED=false
+      - PEP_PROXY_APP_ID=fiware-grafana-123
+      - PEP_PROXY_USERNAME=fiware-grafana-123
+      - PEP_PASSWORD=pep_proxy_8fed1e94-0e3f-4da5-8087-5645ba33c126
+      - PEP_PROXY_PDP=idm
+      - PEP_PROXY_MAGIC_KEY=1234
+  
+  # proxy for the context broker endpoint for temporal queries
+  wilma-mintaka:
+    image: fiware/pep-proxy:8.3.0
+    container_name: wilma-mintaka
+    networks:
+      - mintaka
+    depends_on:
+      - keyrock
+    #ports:  # might be relevant for debugging
+    #  - "1028:1028"
+    expose:
+      - "1028"
+    environment:
+      - PEP_PROXY_APP_HOST=mintaka
+      - PEP_PROXY_APP_PORT=8083
+      - PEP_PROXY_PORT=1028
+      - PEP_PROXY_IDM_HOST=keyrock
+      - PEP_PROXY_IDM_PORT=${KEYROCK_PORT:-3005}
+      - PEP_PROXY_HTTPS_ENABLED=false
+      - PEP_PROXY_AUTH_ENABLED=false
+      - PEP_PROXY_IDM_SSL_ENABLED=false
+      - PEP_PROXY_APP_ID=fiware-grafana-123
+      - PEP_PROXY_USERNAME=fiware-grafana-123
+      - PEP_PASSWORD=pep_proxy_8fed1e94-0e3f-4da5-8087-5645ba33c126
+      - PEP_PROXY_PDP=idm
+      - PEP_PROXY_MAGIC_KEY=1234
+      
+  fiware-grafana:
+    environment:
+      - TOKEN_URL=${TOKEN_URL:-http://keyrock:3005/oauth2/token}
+      - CLIENT_ID=${CLIENT_ID:-fiware-grafana-123}
+      - CLIENT_SECRET=${CLIENT_SECRET:-fiware-grafana-clientsecret}
+      - BROKER_URL=${BROKER_URL:-http://wilma-orion:1027}
+      - TIMESERIES_URL=${TIMESERIES_URL:-http://wilma-mintaka:1028}
+      
+   
+networks:
+  mysql:
+  
+volumes:
+  mysql:
+  
+  

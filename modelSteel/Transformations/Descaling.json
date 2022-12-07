@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Descaling.json",
+    "title": "Descaling",
+    "description": "CAPRI model for descaling.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/SurfaceTreatment",
+    "allOf": [
+        {
+            "$ref": "./SurfaceTreatment.json"
+        }]
+
+}

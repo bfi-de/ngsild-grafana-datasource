@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/CastingStrand.json",
+    "title": "CastingStrand",
+    "description": "CAPRI model for a casting strand in a continuous casting machine.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/ProductionEquipment",
+    "allOf": [
+        {
+            "$ref": "../ProductionEquipment.json"
+        },{
+            "properties": {
+                "type": { "type": "string"},
+                "strandNumber": { "type": "integer", "description": "The strand id" },
+                "defectRate": {"type": "number", "format": "float", "description": "Unit 1"},
+                "castingVelocity": {"type": "number", "format": "float", "description": "Casting velocity, usually provided in m/min, corresponding to unit code 2X"},
+                "mouldWaterTemperatureDifference": {"type": "number", "format": "float"},
+            }
+        }
+    ],
+    "required": [
+        "id",
+        "type",
+        "strandNumber"
+    ]
+
+}

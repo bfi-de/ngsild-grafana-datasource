@@ -1,0 +1,7 @@
+# Editor junk
+.vscode/
+.history/
+*.sublime-workspace
+*.swp
+.idea/
+*.iml

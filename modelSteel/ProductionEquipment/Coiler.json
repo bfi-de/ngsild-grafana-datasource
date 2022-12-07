@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Coiler.json",
+    "title": "Coiler",
+    "description": "Coiler model.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/ProductionEquipment",
+    "allOf": [
+        { "$ref": "../ProductionEquipment.json" }
+    ]
+}

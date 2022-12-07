@@ -1,0 +1,189 @@
+version: "3"
+# based on
+# https://ngsi-ld-tutorials.readthedocs.io/en/latest/short-term-history.html
+
+services:
+  mongo:
+    image: mongo:5
+    container_name: mongo
+    restart: always
+    expose:
+        - "27017"
+    ports:  # for debugging
+      - "27017:27017"
+    volumes:
+      #- ./volumes/mongo-db:/data/db
+      #- ./volumes/mongo-config:/data/configdb
+      - fiware-mongo-config:/data/db
+      - fiware-mongo-data:/data/configdb
+    networks:
+      - mongo
+    command: --nojournal
+    healthcheck:
+      test: |
+        host=`hostname --ip-address || echo '127.0.0.1'`; 
+        mongo --quiet $host/test --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' && echo 0 || echo 1    
+      interval: 15s
+    
+  timescale:
+    image: timescale/timescaledb-ha:pg14-latest
+    #image: timescale/timescaledb:latest-pg14  # missing postgis
+    container_name: timescale
+    restart: always
+    environment:
+      - POSTGRES_USER=orion
+      - POSTGRES_PASSWORD=orion
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - TIMESCALEDB.TELEMETRY_LEVEL=off
+      - PGDATA=/home/postgres/pgdata/data
+      #- PGDATA=/var/lib/postgresql/data  # https://github.com/timescale/timescaledb-docker-ha/issues/272
+    command: ["postgres", "-c", "log_statement=none"]
+    expose:
+      - "5432"
+    ports:  # for debugging
+      - "5432:5432"
+    networks:
+      - timescale
+    volumes:
+      #- ./volumes/timescale:/home/postgres/pgdata/data
+      - fiware-timescale:/home/postgres/pgdata/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U orion" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  orion:
+    image: fiware/orion-ld
+    container_name: orionld
+    restart: always
+    environment:
+    - ORIONLD_TROE=TRUE
+    - ORIONLD_TROE_USER=orion
+    - ORIONLD_TROE_PWD=orion
+    - ORIONLD_TROE_HOST=timescale
+    - ORIONLD_MONGO_HOST=mongo
+    - ORIONLD_MULTI_SERVICE=TRUE
+    - ORIONLD_DISABLE_FILE_LOG=TRUE
+    depends_on:
+      mongo:
+        condition: service_healthy
+      timescale:
+        condition: service_healthy
+    networks:
+      - mongo
+      - timescale
+      - context
+      - orion
+    expose:
+      - "1026"
+    ports:
+      - "1026:1026"
+    command: -dbhost mongo -logLevel ERROR -troePoolSize 10 -forwarding
+    healthcheck:
+      test: curl --fail -s http://orion:1026/version || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  
+  mintaka:
+    image: fiware/mintaka
+    container_name: mintaka
+    restart: always
+    depends_on:
+      - timescale
+    environment:
+      - MICRONAUT_SERVER_PORT=8083
+      - ENDPOINTS_ALL_PORT=8084  # Management port
+      - DATASOURCES_DEFAULT_HOST=timescale
+      - DATASOURCES_DEFAULT_PORT=5432
+      - DATASOURCES_DEFAULT_USERNAME=orion
+      - DATASOURCES_DEFAULT_PASSWORD=orion
+      - DATASOURCES_DEFAULT_DATABSE=orion
+      - DATASOURCES_DEFAULT_MAXIMUM_POOL_SIZE=2
+    networks:
+      - timescale
+      - mintaka
+      - context
+    expose:
+        - "8083"
+    ports:
+        - "8083:8083"
+        
+  context:
+    image: httpd
+    container_name: context
+    expose:
+      - "80"
+    ports: # for debugging
+      - "3004:80"
+    volumes:
+      - ${MODEL_FOLDER:-./model}:/usr/local/apache2/htdocs/:ro
+    networks:
+      - context
+    #healthcheck:
+    #  test: (wget --server-response --spider --quiet  http://ld-context/ngsi-context.jsonld 2>&1 | awk 'NR==1{print $$2}'|  grep -q -e "200") || exit 1
+     
+  fiware-grafana:
+    image: grafana/grafana:latest
+    container_name: fiware-grafana
+    ports:
+        - "3000:3000"
+    volumes:
+        # needs to be built first!
+        - ./datasource/plugin/dist:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro
+        - ./datasource/volumes/provisioning/${DATASOURCES_FOLDER:-datasources}:/etc/grafana/provisioning/datasources:ro
+        - ./datasource/volumes/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+        - ./datasource/volumes/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+        - GF_PATHS_PLUGINS=/var/lib/grafana/plugins
+        # dev setting: allow unsigned plugins; comma separated list of plugins
+        - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource
+        # dev settings => disable authentication
+        - GF_AUTH_ANONYMOUS_ENABLED=true
+        - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+        - GF_SERVER_DOMAIN=localhost
+        - BROKER_URL=${BROKER_URL:-http://orion:1026}
+        # TODO check if this works at all
+        - CONTEXT_URL=${CONTEXT_URL:-http://context/ngsi-context.jsonld}
+        - TIMESERIES_URL=${TIMESERIES_URL:-http://mintaka:8083}
+        - TOKEN_URL=${TOKEN_URL}
+        - CLIENT_ID=${CLIENT_ID}
+        - CLIENT_SECRET=${CLIENT_SECRET}
+        #- GF_SERVER_SERVE_FROM_SUB_PATH=true
+        #- GF_SERVER_ROOT_URL=/bfi/dashboards/
+    networks:
+        - orion
+        - mintaka
+        #- context
+    depends_on:
+        - orion
+        - mintaka
+  
+  ngsild-init:
+    image: curlimages/curl:latest
+    container_name: ngsild-init
+    depends_on: 
+      orion:
+        condition: service_healthy
+      context:
+        condition: service_started
+    volumes:
+      - ${MODEL_FOLDER:-./model}:/model:ro
+    networks:
+      - orion
+      - context
+    command: ["sh", "-c", "sleep 2 && curl --retry 10 --retry-delay 10 --connect-timeout 10 -X POST -H 'Content-Type: application/json' -H 'Link: <http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"' -d @/model/sample.json http://orion:1026/ngsi-ld/v1/entityOperations/create && curl --retry 10 --retry-delay 10 --connect-timeout 10 -X POST -H 'Content-Type: application/json' -H 'Link: <http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"' -d @/model/sampleTimeseries1.json http://orion:1026/ngsi-ld/v1/temporal/entities"]
+   
+networks:
+  mongo:
+  timescale:
+  context:
+  orion:
+  mintaka:
+  
+volumes:
+  fiware-timescale:
+  fiware-mongo-config:
+  fiware-mongo-data:
+  

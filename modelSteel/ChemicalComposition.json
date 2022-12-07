@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/ChemicalComposition.json",
+    "title": "CAPRI model for the chemical composition of heat",
+    "description": "CAPRI model for the chemical composition of heat.",
+    "type": "object",
+    "properties": {
+        "c": { "type": "number", "format": "float", "description": "Carbon content, unit: parts in 1" },
+        "mn": { "type": "number", "format": "float", "description": "Manganese content, unit: parts in 1" },
+        "si": { "type": "number", "format": "float", "description": "Silicon content, unit: parts in 1" },
+        "s": { "type": "number", "format": "float", "description": "Sulfur content, unit: parts in 1" },
+        "cu": { "type": "number", "format": "float", "description": "Copper content, unit: parts in 1" },
+        "sn": { "type": "number", "format": "float", "description": "Tin content, unit: parts in 1" },
+        "h": { "type": "number", "format": "float", "description": "Hydrogen content, unit: parts in 1" },
+        "toBeContinued": {"type": "string", "description": "placeholder" }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/ProductionEquipment.json",
+    "title": "ProductionEquipment",
+    "description": "SAREF4INMA model for production equipment/machines.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "x-extends": "https://capri-project.com/model/steel/FeatureOfInterest",
+    "allOf": [{
+            "$ref": "./FeatureOfInterest.json"
+        },
+        { 
+            "properties": {
+                "isPartOf": { 
+                    "type": "string", 
+                    "format": "uri",
+                    "x-ref-type": "ProductionEquipment",
+                    "description": "A reference to the parent machine this one is part of" 
+                },
+                "locatedIn": {
+                    "type": "string", 
+                    "format": "uri",
+                    "x-ref-type": "BuildingSpace",
+                    "description": "The area this item is located in"
+                }
+            }
+        }       
+    ]
+}

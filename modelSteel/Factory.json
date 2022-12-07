@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "$schemaVersion": "2020-12",
+    "$id": "https://capri-project.com/model/steel/Factory.json",
+    "title": "Factory",
+    "description": "SAREF4INMA model for a factory.",
+    "type": "object",
+    "x-ngsi": {
+        "uri-prefix": "https://capri-project.com/model/steel/"
+    },
+    "properties": {
+        "id": { "type": "string"},
+        "type": { "type": "string"},
+        "hasSpace": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "uri",
+                "x-ref-type": "BuildingSpace" 
+            },
+            "description": "Subspaces"
+        },
+        "productionCapacity": {"type": "number", "format": "float"}
+    },
+    "required": [
+        "id",
+        "type"
+    ]
+
+}
