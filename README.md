@@ -4,7 +4,7 @@ A Grafana datasource for FIWARE context brokers. Supports temporal, geo and grap
 
 ## Getting started
 
-This assumes that docker (and docker-compose) is installed. Run the following commands, starting from the repo base folder:
+This assumes that docker (and docker-compose) is installed. Run the following commands in a bash shell (e.g. git Bash on Windows), starting from the repo base folder:
 
 ```
 cd datasource
