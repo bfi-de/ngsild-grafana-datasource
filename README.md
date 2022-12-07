@@ -132,6 +132,8 @@ In this scenario the context broker can be accessed without authentication.
 ./run.sh
 ```
 
+Access the Grafana dashboards at http://localhost:3000/dashboards.
+
 Stop:
 ```
 ./stop.sh
@@ -144,6 +146,8 @@ In this scenario the context broker is protected by a [PEP proxy](https://github
 ```
 ./run_auth.sh
 ```
+
+Access the Grafana dashboards at http://localhost:3000/dashboards.
 
 Stop:
 ```
