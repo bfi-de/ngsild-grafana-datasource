@@ -190,12 +190,20 @@ docker compose down
 
 **Configuration options**
 
+These options can be set via environment variables:
+
 * **BROKER_URL**: URL of the context broker. Default: http://host.docker.internal:1026
 * **CONTEXT_URL**: URL of the context provider. Default: http://host.docker.internal:3004/ngsi-context.jsonld}
 * **TIMESERIES_URL**: URL of the context broker endpoint for temporal queries. Default: http://host.docker.internal:8083
 * **TOKEN_URL**: URL of the OAuth token endpoint. Default: empty
 * **CLIENT_ID**: OAuth client id. Default: empty
 * **CLIENT_SECRET**: OAuth client secret. Default: empty
+
+Example:
+
+```
+CLIENT_ID=my-client CLIENT_SECRET=top-secret docker compose up -d
+```
 
 ## License
 
