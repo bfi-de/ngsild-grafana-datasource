@@ -46,7 +46,7 @@ A complete test scenario with preconfigured sample data in the context broker, p
 
    ```bash
    cp -r dist ngsild-grafana-datasource
-   tar -czvf ngsild-grafana-datasource-0.1.0.tgz ngsild-grafana-datasource
+   tar -czvf ngsild-grafana-datasource-1.0.0.tgz ngsild-grafana-datasource
    rm -rf ngsild-grafana-datasource
    ```
    Adapt the version number.

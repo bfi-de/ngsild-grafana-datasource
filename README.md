@@ -2,9 +2,30 @@
 
 A Grafana datasource for FIWARE context brokers. Supports temporal, geo and graph data. 
 
+Zenodo link: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7428995.svg)](https://doi.org/10.5281/zenodo.7428995)
+
 ## Getting started
 
-This assumes that docker (and docker-compose) is installed. Run the following commands in a bash shell (e.g. git Bash on Windows), starting from the repo base folder:
+The datasource plugin is available as a .tgz file from the releases: https://github.com/bfi-de/ngsild-grafana-datasource/releases. 
+
+The following instructions describe one way to spin up a Grafana instance in a Docker container with the datasource plugin loaded. It is not required to clone the git repository, but configuration, creation of dashboards and the setup of the NGSI-LD context broker need to be done separately. For a sample scenario with preconfigured datasource and plugins see [Run git sample scenario](#run-git-sample-scenario) below.
+
+Download the released datasource plugin, decompress it and run Grafana in a Docker containers:
+
+```bash
+curl -L https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.0.0/ngsild-grafana-datasource-1.0.0.tgz --output ngsild-grafana-datasource-1.0.0.tgz
+tar -zxvf ngsild-grafana-datasource-1.0.0.tgz
+MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_DOMAIN=localhost grafana/grafana:latest
+```
+
+Create a new data source at http://localhost:3000/datasources/new. Filter for *ngsild* and select the NGSI-LD datasource. On the configuration page for the plugin, enter the URLs of the context provider, NGSI-LD broker and the temporal endpoint. With Docker Desktop on Windows the hostname *host.docker.internal* refers to the internal IP address of the host, which can be convenient if the mentioned services run on the host, too.
+
+To stop Grafana, run `docker stop grafana-dev`. 
+
+## Run git sample scenario
+
+The repository contains a sample scenario with preconfigured services.
+This assumes that docker (and docker-compose) is installed and running. Clone the repository, then run the following commands in a bash shell (e.g. git Bash on Windows), starting from the repo base folder:
 
 ```
 cd datasource
@@ -14,7 +35,7 @@ cd ..
 ./run.sh
 ```
 
-This will spin up an NGSI-LD context broker along with several supporting services and sample data, as well as a Grafana instance with a preconfigured datasource and some sample dashboards. Visit http://localhost:3000/dashboards in the browser to see the dashboards. To shutdown everything, run `./stop.sh`. See [Build the plugin](#build-the-plugin) and [Run sample scenario](#run-sample-scenario) for details and options.
+It will spin up an NGSI-LD context broker along with several supporting services and sample data, as well as a Grafana instance with the preconfigured datasource and some sample dashboards. Visit http://localhost:3000/dashboards in the browser to see the dashboards. To shutdown everything, run `./stop.sh`. See [Build the plugin](#build-the-plugin) and [Run sample scenario](#run-sample-scenario) for details and options.
 
 ## Datasource configuration
 
