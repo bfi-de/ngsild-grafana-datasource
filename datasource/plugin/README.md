@@ -1,14 +1,22 @@
-# Grafana Data Source Plugin Template
+# NGSI-LD Grafana datasource plugin
 
-[![Build](https://github.com/grafana/grafana-starter-datasource/workflows/CI/badge.svg)](https://github.com/grafana/grafana-starter-datasource/actions?query=workflow%3A%22CI%22)
+A Grafana datasource for FIWARE context brokers. Supports temporal, geo and graph data. See https://github.com/bfi-de/ngsild-grafana-datasource. 
 
-This template is a starting point for building Grafana Data Source Plugins
+## Run with Grafana
 
-## What is Grafana Data Source Plugin?
+For a test setup, extract the .tgz file in the desired directory and execute the following shell command in the same folder (Docker must be running):
 
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+```bash
+MSYS_NO_PATHCONV=1  docker run --rm -d --name grafana-dev -p 3000:3000 -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_DOMAIN=localhost grafana/grafana:latest
+```
 
-## Getting started
+Create a new data source at http://localhost:3000/datasources/new. Filter for ngsild and select the NGSI-LD datasource. On the configuration page for the plugin, enter the URLs of the context provider, NGSI-LD broker and the temporal endpoint. With Docker Desktop on Windows the hostname *host.docker.internal* refers to the internal IP address of the host, which can be convenient if the mentioned services run on the host, too.
+
+To stop Grafana, run `docker stop grafana-dev`. 
+
+A complete test scenario with preconfigured sample data in the context broker, preconfigured datasource and dashboards can be found in the git repository https://github.com/bfi-de/ngsild-grafana-datasource. 
+
+## Development: getting started
 
 1. Install dependencies
 
@@ -33,6 +41,17 @@ Grafana supports a wide range of data sources, including Prometheus, MySQL, and 
    ```bash
    yarn build
    ```
+
+4. Pack plugin after building
+
+   ```bash
+   cp -r dist ngsild-grafana-datasource
+   tar -czvf ngsild-grafana-datasource-0.1.0.tgz ngsild-grafana-datasource
+   rm -rf ngsild-grafana-datasource
+   ```
+   Adapt the version number.
+
+
 
 ## Learn more
 

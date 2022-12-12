@@ -10,7 +10,7 @@
     "sign": "grafana-toolkit plugin:sign",
     "start": "yarn watch"
   },
-  "author": "Christoph Nölle",
+  "author": "Christoph Nölle (BFI)",
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "^9.3.1",

@@ -26,6 +26,7 @@ work/
 ci/
 e2e-results/
 
+*.tgz
 yarn.lock
 package.lock
 
