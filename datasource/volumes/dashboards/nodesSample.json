@@ -55,6 +55,7 @@
             "type": "ngsild-grafana-datasource",
             "uid": "ngsild_1"
           },
+          "entityName": "id_short",
           "entityType": "CastingStrand",
           "primaryArcColor": "#F2495C",
           "primaryNodeAttributes": {

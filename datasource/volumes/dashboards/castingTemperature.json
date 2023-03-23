@@ -109,6 +109,7 @@
             "type": "ngsild-grafana-datasource",
             "uid": "ngsild_1"
           },
+          "entityName": "id_short",
           "entityId": "",
           "entityType": "ContinuousCastingMachine",
           "queryType": "temporal",
@@ -176,6 +177,7 @@
             "type": "ngsild-grafana-datasource",
             "uid": "ngsild_1"
           },
+          "entityName": "id_short",
           "entityId": "urn:ngsi-ld:CastingStrand:CastingStrand1",
           "queryType": "entity",
           "refId": "A"
@@ -253,6 +255,7 @@
             "type": "ngsild-grafana-datasource",
             "uid": "ngsild_1"
           },
+          "entityName": "id_short",
           "entityType": "ContinuousCastingMachine",
           "queryType": "temporal",
           "refId": "A"

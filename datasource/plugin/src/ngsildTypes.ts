@@ -43,11 +43,13 @@ export type Relationship = {
     datasetId?: string;
 }
 
-export const getValue = <V>(property: Property<V>) => {
+export const getValue = <V>(property: Property<V>|Array<Property<V>>): any => {
     if (property === undefined || property === null)
         {return undefined;}
     if (typeof property !== "object")
         {return property;}
+    if (Array.isArray(property))
+        {return property.map(getValue);}
     if (property?.value === undefined)
         {return undefined;}
     if (typeof property.value === "object" && "@value" in property.value!)

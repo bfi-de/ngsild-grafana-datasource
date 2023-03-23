@@ -1,9 +1,10 @@
 import { MutableDataFrame } from "@grafana/data";
 import { Entity, GeoProperty, GeoType, getValue, GeoCoordinates, Property, getValueWithUnit } from "ngsildTypes";
+import { NgsildQuery } from "types";
 
 export class GeoHandler {
 
-    static handleGeoResult(entities: Entity[], refId: string): MutableDataFrame {
+    static handleGeoResult(entities: Entity[], query: NgsildQuery): MutableDataFrame {
         let allAttributes: string[] = entities
           .map(result => Object.keys(result))
           .flatMap(attributes => attributes)
@@ -30,15 +31,18 @@ export class GeoHandler {
           const coordinates: GeoCoordinates = value.coordinates;
           longitude.values.push(coordinates[0]);
           latitude.values.push(coordinates[1]);
-          let name: string = entity.id;
-          const col: number = name.lastIndexOf(":");
-            if (col >= 0 && col < name.length-1)
-              {name = name.substring(col + 1);} 
+          const nameField = !!query.entityName && query.entityName in entity ? query.entityName : "id";
+          let name: string = getValue(entity[nameField] as any)?.toString() || entity.id;
+          if (query.entityName === "id_short" || (!query.entityName && !query.useLongEntityName)) {
+            const col: number = name.lastIndexOf(":");
+              if (col >= 0 && col < name.length-1)
+                {name = name.substring(col + 1);} 
+          }
           names.values.push(name);
         });
         [latitude, longitude, names].forEach(f => fields.unshift(f));
         return new MutableDataFrame({
-            refId: refId,
+            refId: query.refId,
             fields: fields
           });
       }

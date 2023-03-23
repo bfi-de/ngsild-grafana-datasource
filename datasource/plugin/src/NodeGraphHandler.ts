@@ -2,7 +2,6 @@ import { FieldDTO, FieldType, MutableDataFrame, NodeGraphDataFrameFieldNames } f
 import { NgsildDataSource } from "datasource";
 import { Entity, getValue, getValueWithUnit, Property, Relationship } from "ngsildTypes";
 import { NgsildQuery, NgsildQueryType } from "types";
-import { units } from "units";
 
 /*
   Graph panel documentation: https://grafana.com/docs/grafana/latest/panels-visualizations/visualizations/node-graph/
@@ -20,8 +19,9 @@ export class NodeGraphHandler {
     async handleGraphResult(entities: Entity[], maxGraphDepth: number): Promise<[MutableDataFrame, MutableDataFrame]> {
         entities = await this.resolveMissingEntities(entities, maxGraphDepth);
         const entityLabel = (entity: Entity) => {
-            let id: string = entity.id;
-            if (this.query.useLongEntityName)
+            const nameField = !!this.query.entityName && this.query.entityName in entity ? this.query.entityName : "id";
+            let id: string = getValue(entity[nameField] as any)?.toString() || entity.id;
+            if (this.query.entityName !== "id_short" || (!this.query.entityName && this.query.useLongEntityName))
                 {return id;}
             const col: number = id.lastIndexOf(":");
             return col > 0 && col<id.length-1 ? id.substring(col+1) : id;

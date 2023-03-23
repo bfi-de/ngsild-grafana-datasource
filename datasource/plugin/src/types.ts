@@ -119,11 +119,45 @@ export const georelFromValue = (georel?: string): GeorelProperty => {
   }
 }
 
+export enum NamePattern {
+  ENTITY_PLUS_ATTRIBUTE = "entity_plus_attribute",
+  ENTITY_NAME = "entity_name",
+  ATTRIBUTE = "attribute"
+}
+
+export const namePatternFromValue = (namePattern?: string): NamePattern => {
+  switch(namePattern?.toLowerCase()) {
+  case "entity_name":
+    return NamePattern.ENTITY_NAME;
+  case "attribute":
+    return NamePattern.ATTRIBUTE;
+  default:
+    return NamePattern.ENTITY_PLUS_ATTRIBUTE;
+  }
+}
+
 // TODO support Array<string> for each of the options?
 export interface NgsildQuery extends DataQuery {
   entityId?: string;
   attributes?: string[];
   entityType?: string; // note: multiple types are supported in most operations as a comma-separated string
+  /**
+   * See enum NamePattern. Allowed values:
+   *  - entity_plus_attribute (default)
+   *  - entity_name 
+   *  - attribute
+   */
+  namePattern?: string;  // see enum NamePattern
+  /**
+   * Supported values:
+   *  - id_short (default)
+   *  - id
+   *  - name of an attribute that determines the entity name, e.g. "name"
+   */
+  entityName?: string;
+  /**
+   * @deprecated use entityName instead
+   */
   useLongEntityName?: boolean;
   /**
    * A query adhering to the NGSI-LD query language

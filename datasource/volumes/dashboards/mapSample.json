@@ -148,6 +148,7 @@
             "type": "ngsild-grafana-datasource",
             "uid": "ngsild_1"
           },
+          "entityName": "id_short",
           "entityType": "Factory",
           "geometry": "Point",
           "geoproperty": "location",

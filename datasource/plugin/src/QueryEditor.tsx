@@ -4,7 +4,7 @@ import React, { ChangeEvent, PureComponent } from 'react';
 import { InlineFormLabel, Segment, MultiSelect, Checkbox, Select, Input } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { NgsildDataSource } from './datasource';
-import { defaultQuery, NgsildSourceOptions, NgsildQuery, NgsildQueryType, queryTypeForValue, TimeseriesAggregationMethod } from './types';
+import { defaultQuery, NgsildSourceOptions, NgsildQuery, NgsildQueryType, queryTypeForValue, TimeseriesAggregationMethod, NamePattern, namePatternFromValue } from './types';
 import {  Entity, EntityType, INVALID_ATTRIBUTES } from 'ngsildTypes';
 import { GraphQueryEditor } from 'components/GraphQueryEditor';
 import { TsAggregationEditor } from 'components/TimeseriesAggregationEditor';
@@ -34,6 +34,14 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
     {value: NgsildQueryType.ENTITY, label: "current value", description: "Current value request", title: "Query the current value of one or multiple entity attributes"},
     {value: NgsildQueryType.GEO, label: "geo", description: "Geo request", title: "Query the location of entities, useful for map visualizations"},
     {value: NgsildQueryType.NODE_GRAPH, label: "node graph", description: "Node graph request", title: "Retrieve a directed graph dataset for the node graph panel"},
+  ];
+  private static readonly NAMING_PATTERNS: Array<SelectableValue<NamePattern>> = [
+    {value: NamePattern.ENTITY_PLUS_ATTRIBUTE, label: "Entity plus attribute", description: "Entity name plus attribute",
+            title: "The datapoint label is composed of the entity name + \":\" + the attribute name." },
+    {value: NamePattern.ENTITY_NAME, label: "Entity", description: "Entity name",
+            title: "The datapoint label is given by the entity name." },
+    {value: NamePattern.ATTRIBUTE, label: "Attribute", description: "Attribute name",
+            title: "The datapoint label is given by the attribute name." },
   ];
 
   constructor(props: Props) {
@@ -182,6 +190,18 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
     return attribs;
   }
 
+  private getEntityNameFields(entityType?: string, entityId?: string) {
+    const attributes: Array<SelectableValue<string>> = this.getAttributes(entityType, entityId);
+    const nameIdx = attributes.findIndex(v => v.value === "name");
+    if (nameIdx > 0) {
+      const nameSelection = attributes.splice(nameIdx, 1);
+      attributes.unshift(nameSelection);
+    }     
+    attributes.unshift({value: "id", label: "id", description: "Entity id", title: "Use the entity id as the entity name."});
+    attributes.unshift({value: "id_short", label: "id (short)", description: "Short entity id", title: "Use the short form of the entity id as the entity name."});
+    return attributes;
+  }
+
   private getAttributesInternal(entityType?: string, entityId?: string, queryType?: NgsildQueryType): Array<SelectableValue<string>> {
     if (queryType === NgsildQueryType.NODE_GRAPH) {  //  in the case of graph queries we should display all available attributes // TODO maybe show those applicable to entity type first?
       if (this.state?.attributes?.length! > 0)
@@ -212,6 +232,13 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
     else
       {onChange({ ...query, entityType: type });}
   };
+
+  onEntityNameFieldChange = (event: SelectableValue<string>) => {
+    const { onChange, query } = this.props;
+    const name = event.value?.trim() || "id_short";
+    onChange({...query, entityName: name});
+  }
+
 
   onAttributeChange = (event: Array<SelectableValue<string>>) => {
     const { onChange, query } = this.props;
@@ -251,6 +278,11 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
     onChange({ ...query, useLongEntityName: event.currentTarget.checked });
   };
 
+  onNamePatternChange = (event: SelectableValue<NamePattern>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, namePattern: event?.value?.valueOf() || NamePattern.ENTITY_PLUS_ATTRIBUTE.valueOf()});
+  };
+
   onGraphAttributesChanged = (kind: "primary"|"secondary"|"arcColor", attributes: Record<string, string[]>|undefined) => {
     const { onChange, query } = this.props;
     const key: string = kind + "NodeAttributes";
@@ -286,8 +318,44 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { entityId, entityType, attributes, useLongEntityName, queryType, customQuery } = query;
+    const { entityId, entityType, attributes, namePattern, entityName, useLongEntityName, queryType, customQuery } = query;
     const queryType0: NgsildQueryType = queryTypeForValue(queryType)!;
+    const namePattern0: NamePattern = namePatternFromValue(namePattern)
+    const entityName0: string = !!entityName ? entityName : (useLongEntityName ? "id" : "id_short");
+    let namePatternSelector = <React.Fragment></React.Fragment>;
+    if (queryType !== NgsildQueryType.NODE_GRAPH && queryType !== NgsildQueryType.GEO) {
+      namePatternSelector = <div className="gf-form-inline">
+        <div className="gf-form">
+          <InlineFormLabel width={12} tooltip="Select the naming pattern for the datapoints">
+            Naming pattern
+          </InlineFormLabel>              
+          <Select<NamePattern>
+            options={QueryEditor.NAMING_PATTERNS}
+            value={namePattern0}
+            onChange={this.onNamePatternChange}
+            width={22}
+            ></Select>
+        </div>
+      </div>;
+    }
+    let entityNameFieldSelector = <React.Fragment></React.Fragment>;
+    if (namePattern0 !== NamePattern.ATTRIBUTE || queryType === NgsildQueryType.NODE_GRAPH || queryType === NgsildQueryType.GEO) {
+      entityNameFieldSelector = <
+        div className="gf-form-inline">
+        <div className="gf-form">
+          <InlineFormLabel width={12} tooltip="Select the attribute that determines the entity name.">
+            Entity name
+          </InlineFormLabel>              
+          <Segment<string>
+            value={entityName0 || ""}
+            onChange={this.onEntityNameFieldChange}
+            options={this.getEntityNameFields(entityType)}
+            inputMinWidth={20}
+            allowCustomValue
+          ></Segment>
+        </div>
+      </div>;
+    }
     let graphEditor = <React.Fragment></React.Fragment>;
     if (queryType === NgsildQueryType.NODE_GRAPH) {
       const {primaryNodeAttributes, secondaryNodeAttributes, arcColorNodeAttributes, primaryArcColor, secondaryArcColor, arcColorComplementLabel } = query;
@@ -335,7 +403,7 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
                 options={QueryEditor.QUERY_TYPES}
                 value={queryType0}
                 onChange={this.onQueryTypeChange}
-                width={20}
+                width={22}
                 ></Select>
             </div>
           </div>
@@ -355,7 +423,7 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
           </div>
           <div className="gf-form-inline">
             <div className="gf-form">
-            <InlineFormLabel width={12} tooltip="Select the entity id">
+              <InlineFormLabel width={12} tooltip="Select the entity id">
                 Entity id
               </InlineFormLabel>              
               <Segment<string>
@@ -376,7 +444,7 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
                 options={this.getAttributes(entityType, entityId, queryType0)}
                 value={attributes}
                 onChange={this.onAttributeChange}
-                width={20}
+                width={22}
                 ></MultiSelect>
             </div>
           </div>
@@ -390,20 +458,12 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
                 onChange={evt => this.onCustomQueryChange(evt.currentTarget.value)}
                 type="string"
                 placeholder={"speed>50;brandName!=\"Mercedes\""}
-                width={20}
+                width={22}
               ></Input>
             </div>
           </div>
-          <div className="gf-form-inline">
-            <div className="gf-form">
-              <Checkbox
-                value={useLongEntityName || false}
-                onChange={this.onLongEntityNameChange}
-                label="Long entity names"
-                description="Show the fully qualified entity name?"
-              />
-            </div>
-          </div>
+          {namePatternSelector}
+          {entityNameFieldSelector}
         </div>  
         <div>
           {geoEditor}
@@ -416,5 +476,19 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
         </div>
       </div>
     );
+    /*
+      deprecated:
+      <div className="gf-form-inline">
+        <div className="gf-form">
+          <Checkbox
+            value={useLongEntityName || false}
+            onChange={this.onLongEntityNameChange}
+            label="Long entity names"
+            description="Show the fully qualified entity name?"
+          />
+        </div>
+      </div>
+    */
+
   }
 }
