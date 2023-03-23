@@ -15,7 +15,14 @@ Download the released datasource plugin, decompress it and run Grafana in a Dock
 ```bash
 curl -L https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.0.0/ngsild-grafana-datasource-1.0.0.tgz --output ngsild-grafana-datasource-1.0.0.tgz
 tar -zxvf ngsild-grafana-datasource-1.0.0.tgz
-MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_DOMAIN=localhost grafana/grafana:latest
+MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 \
+    -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro \
+    -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins \
+    -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource \
+    -e GF_AUTH_ANONYMOUS_ENABLED=true \
+    -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin \
+    -e GF_SERVER_DOMAIN=localhost \
+    grafana/grafana:latest
 ```
 
 Create a new data source at http://localhost:3000/datasources/new. Filter for *ngsild* and select the NGSI-LD datasource. On the configuration page for the plugin, enter the URLs of the context provider, NGSI-LD broker and the temporal endpoint. With Docker Desktop on Windows the hostname *host.docker.internal* refers to the internal IP address of the host, which can be convenient if the mentioned services run on the host, too.
