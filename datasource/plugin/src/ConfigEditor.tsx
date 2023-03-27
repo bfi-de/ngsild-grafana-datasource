@@ -35,6 +35,13 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange({ ...options, access: value.value || "proxy" });
   };
 
+  onFlavourChange = (value: SelectableValue<string>) => {
+    const { options, onOptionsChange } = this.props;
+    const jsonData = options.jsonData;
+    const options2 = {...options, jsonData: {...jsonData, flavour: value.value as any || "generic"  }};
+    onOptionsChange(options2);
+  };
+
   onAuthStatusChange = (active: boolean) => {
     const { options, onOptionsChange } = this.props;
     const jsonData = { ...options.jsonData, authType: active ? "oauth" : undefined};
@@ -113,6 +120,19 @@ export class ConfigEditor extends PureComponent<Props, State> {
               options={[{value: "direct", title: "Send broker requests from the browser", label: "direct"}, {value: "proxy", title: "Send broker requests via the backend", label: "proxy"}]}
               value={options.access || "direct"}
               onChange={this.onAccessModeChange}
+              width={20}
+              />
+          </div>
+        </div>
+        <div className="gf-form-inline">
+          <div className="gf-form">
+            <InlineFormLabel width={10} tooltip="Select the NGSI-LD broker type. This is not too important, it only determines how the test request to check if the datasource is alive is formed.">
+              Flavour
+            </InlineFormLabel>
+            <Select
+              options={[{value: "generic", title: "Any NGSI-LD compatible broker", label: "generic"}, {value: "orion", title: "Orion-LD context broker", label: "orion"}]}
+              value={options.jsonData?.flavour || "generic"}
+              onChange={this.onFlavourChange}
               width={20}
               />
           </div>

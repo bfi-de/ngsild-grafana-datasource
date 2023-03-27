@@ -260,6 +260,10 @@ export interface NgsildSourceOptions extends DataSourceJsonData {
   contextUrl?: string;
   timeseriesUrl?: string;
   tokenUrl?: string;
+  /**
+   * Determines how to execute a test request; orion uses the custom /version endpoint, generic uses /types
+   */
+  flavour?: "generic"|"orion"; 
   //tokenAuth?: string; // will be set automatically to "tokenAuth" when auth is active => fed into plugin.json
 }
 

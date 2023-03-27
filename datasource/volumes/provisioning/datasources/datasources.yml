@@ -27,5 +27,6 @@ datasources:
       tlsSkipVerify: false
       httpMode: POST
       httpHeaderName1: 'Access-Token'
+      flavour: orion
     secureJsonData: {}
     editable: true

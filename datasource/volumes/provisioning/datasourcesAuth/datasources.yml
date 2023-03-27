@@ -29,6 +29,7 @@ datasources:
       httpHeaderName1: 'Access-Token'
       authType: oauth
       tokenUrl: $TOKEN_URL
+      flavour: orion
     secureJsonData:
       clientId: $CLIENT_ID
       clientSecret: $CLIENT_SECRET
