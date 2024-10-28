@@ -453,6 +453,7 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
             <InlineFormLabel width={12} tooltip="A query string conforming to the NGSI-LD query language, such as speed>50;brandName!='Mercedes'">
                 Custom query
               </InlineFormLabel>
+              {/* @ts-ignore */} 
               <Input
                 value={customQuery || ""}
                 onChange={evt => this.onCustomQueryChange(evt.currentTarget.value)}

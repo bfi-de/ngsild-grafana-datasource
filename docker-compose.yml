@@ -4,6 +4,7 @@ version: "3"
 
 services:
   mongo:
+    # 7 not working (requires removing the  command: --nojournal option, and -mongocOnly for orionld)
     image: mongo:5
     container_name: mongo
     restart: always
@@ -26,8 +27,7 @@ services:
       interval: 15s
     
   timescale:
-    image: timescale/timescaledb-ha:pg14-latest
-    #image: timescale/timescaledb:latest-pg14  # missing postgis
+    image: timescale/timescaledb-ha:pg16
     container_name: timescale
     restart: always
     environment:
@@ -54,7 +54,7 @@ services:
       retries: 5
 
   orion:
-    image: fiware/orion-ld
+    image: fiware/orion-ld:latest
     container_name: orionld
     restart: always
     environment:
@@ -79,7 +79,9 @@ services:
       - "1026"
     ports:
       - "1026:1026"
-    command: -dbhost mongo -logLevel ERROR -troePoolSize 10 -forwarding
+    # option -mongocOnly required for Mongodb version >= 6, but does not work with temporal rep
+    #command: -logLevel DEBUG -troePoolSize 10 -forwarding -mongocOnly
+    command: -logLevel DEBUG -troePoolSize 10 -forwarding
     healthcheck:
       test: curl --fail -s http://orion:1026/version || exit 1
       interval: 15s
@@ -87,7 +89,7 @@ services:
       retries: 5
   
   mintaka:
-    image: fiware/mintaka
+    image: fiware/mintaka:latest
     container_name: mintaka
     restart: always
     depends_on:
@@ -99,7 +101,7 @@ services:
       - DATASOURCES_DEFAULT_PORT=5432
       - DATASOURCES_DEFAULT_USERNAME=orion
       - DATASOURCES_DEFAULT_PASSWORD=orion
-      - DATASOURCES_DEFAULT_DATABSE=orion
+      - DATASOURCES_DEFAULT_DATABASE=orion
       - DATASOURCES_DEFAULT_MAXIMUM_POOL_SIZE=2
     networks:
       - timescale
@@ -111,18 +113,18 @@ services:
         - "8083:8083"
         
   context:
-    image: httpd
+    image: httpd:latest
     container_name: context
     expose:
       - "80"
     ports: # for debugging
       - "3004:80"
     volumes:
-      - ${MODEL_FOLDER:-./model}:/usr/local/apache2/htdocs/:ro
+      - ${MODEL_FOLDER:-./modelSteel}:/usr/local/apache2/htdocs/:ro
     networks:
       - context
     #healthcheck:
-    #  test: (wget --server-response --spider --quiet  http://ld-context/ngsi-context.jsonld 2>&1 | awk 'NR==1{print $$2}'|  grep -q -e "200") || exit 1
+    #  test: (wget --server-response --spider --quiet  http://context/ngsi-context.jsonld 2>&1 | awk 'NR==1{print $$2}'|  grep -q -e "200") || exit 1
      
   fiware-grafana:
     image: grafana/grafana:latest
@@ -144,7 +146,6 @@ services:
         - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
         - GF_SERVER_DOMAIN=localhost
         - BROKER_URL=${BROKER_URL:-http://orion:1026}
-        # TODO check if this works at all
         - CONTEXT_URL=${CONTEXT_URL:-http://context/ngsi-context.jsonld}
         - TIMESERIES_URL=${TIMESERIES_URL:-http://mintaka:8083}
         - TOKEN_URL=${TOKEN_URL}
@@ -155,7 +156,7 @@ services:
     networks:
         - orion
         - mintaka
-        #- context
+        - context
     depends_on:
         - orion
         - mintaka
@@ -169,11 +170,11 @@ services:
       context:
         condition: service_started
     volumes:
-      - ${MODEL_FOLDER:-./model}:/model:ro
+      - ${MODEL_FOLDER:-./modelSteel}:/model:ro
     networks:
       - orion
       - context
-    command: ["sh", "-c", "sleep 2 && curl --retry 10 --retry-delay 10 --connect-timeout 10 -X POST -H 'Content-Type: application/json' -H 'Link: <http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"' -d @/model/sample.json http://orion:1026/ngsi-ld/v1/entityOperations/create && curl --retry 10 --retry-delay 10 --connect-timeout 10 -X POST -H 'Content-Type: application/json' -H 'Link: <http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"' -d @/model/sampleTimeseries1.json http://orion:1026/ngsi-ld/v1/temporal/entities"]
+    command: ["sh", "-c", "sleep 2 && curl --retry 10 --retry-delay 10 --connect-timeout 10 -m 60 -X POST -H 'Content-Type: application/json' -H 'Link: <http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"' -d @/model/sample.json http://orion:1026/ngsi-ld/v1/entityOperations/create && curl --retry 3 --retry-delay 10 --connect-timeout 10 -m 60 -X POST -H 'Content-Type: application/json' -H 'Link: <http://context/ngsi-context.jsonld>; rel=\"http://www.w3.org/ns/json-ld#context\"; type=\"application/ld+json\"' -d @/model/sampleTimeseries1.json http://orion:1026/ngsi-ld/v1/temporal/entities"]
    
 networks:
   mongo:

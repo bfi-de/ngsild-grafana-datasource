@@ -139,6 +139,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         </div>
         <div className="gf-form-inline">
           <div className="gf-form">
+            {/* @ts-ignore */} 
             <Checkbox
               checked={isAuthActive}
               onChange={c => this.onAuthStatusChange(c.currentTarget.checked)}
@@ -154,6 +155,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
                 <InlineFormLabel width={10} tooltip="OAuth token server">
                   OAuth token URL
                 </InlineFormLabel>
+                {/* @ts-ignore */} 
                 <Input
                   value={jsonData.tokenUrl || ""}
                   placeholder={"https://my.auth.server.com/v1/oauth/token"}
@@ -167,6 +169,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
                 <InlineFormLabel width={10} tooltip="OAuth client id. This must be configured in the authentication server, too.">
                   Client id
                 </InlineFormLabel>
+                {/* @ts-ignore */} 
                 <Input
                   value={secureJsonData?.clientId || ""}
                   placeholder={authConfigured ? "Value configured" : "No client id configured yet"}
@@ -181,6 +184,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
                 <InlineFormLabel width={10} tooltip="OAuth client secret. This must be configured in the authentication server, too.">
                   Client secret
                 </InlineFormLabel>
+                {/* @ts-ignore */} 
                 <Input
                   value={secureJsonData?.clientSecret || ""}
                   placeholder={authConfigured ? "Value configured" : "No client secret configured yet"}

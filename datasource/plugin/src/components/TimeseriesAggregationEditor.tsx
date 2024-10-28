@@ -66,6 +66,7 @@ export class TsAggregationEditor extends PureComponent<TsAggregationProps, Reado
                         <InlineFormLabel width={12} tooltip="Temporal aggregation duration. Set all entries to 0 to aggregate over the whole time interval.">
                             Aggregation period
                         </InlineFormLabel>
+                        {/* @ts-ignore */} 
                         <Input
                             value={period.years()}
                             onChange={val => this.periodChanged(builder, builder.setYears, val?.currentTarget?.value?.trim())}
@@ -76,6 +77,7 @@ export class TsAggregationEditor extends PureComponent<TsAggregationProps, Reado
                         <InlineFormLabel width={2}>
                             Y
                         </InlineFormLabel>
+                        {/* @ts-ignore */} 
                         <Input
                             value={period.months()}
                             onChange={val => this.periodChanged(builder, builder.setMonths, val?.currentTarget?.value?.trim())}
@@ -86,6 +88,7 @@ export class TsAggregationEditor extends PureComponent<TsAggregationProps, Reado
                         <InlineFormLabel width={2}>
                             M
                         </InlineFormLabel>
+                        {/* @ts-ignore */} 
                         <Input
                             value={period.days()}
                             onChange={val => this.periodChanged(builder, builder.setDays, val?.currentTarget?.value?.trim())}
@@ -96,6 +99,7 @@ export class TsAggregationEditor extends PureComponent<TsAggregationProps, Reado
                         <InlineFormLabel width={2}>
                             DT
                         </InlineFormLabel>
+                        {/* @ts-ignore */} 
                         <Input
                             value={period.hours()}
                             onChange={val => this.periodChanged(builder, builder.setHours, val?.currentTarget?.value?.trim())}
@@ -106,6 +110,7 @@ export class TsAggregationEditor extends PureComponent<TsAggregationProps, Reado
                         <InlineFormLabel  width={2}>
                             H
                         </InlineFormLabel>
+                        {/* @ts-ignore */} 
                         <Input
                             value={period.minutes()}
                             onChange={val => this.periodChanged(builder, builder.setMinutes, val?.currentTarget?.value?.trim())}
@@ -116,6 +121,7 @@ export class TsAggregationEditor extends PureComponent<TsAggregationProps, Reado
                         <InlineFormLabel width={2}>
                             M
                         </InlineFormLabel>
+                        {/* @ts-ignore */} 
                         <Input
                             value={period.seconds()}
                             onChange={val => this.periodChanged(builder, builder.setSeconds, val?.currentTarget?.value?.trim())}

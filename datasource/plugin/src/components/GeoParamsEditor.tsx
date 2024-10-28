@@ -184,6 +184,7 @@ export class GeoParamsEditor extends PureComponent<GeoParamsProps, Readonly<{}>>
             <InlineFormLabel width={12} tooltip="Distance in meters from specified center">
               Distance (m)
             </InlineFormLabel>
+            {/* @ts-ignore */} 
             <Input 
               value={distance}
               onChange={evt => this.distanceChanged(parseFloat(evt.currentTarget?.value?.trim()))}
@@ -224,6 +225,7 @@ export class GeoParamsEditor extends PureComponent<GeoParamsProps, Readonly<{}>>
           <InlineFormLabel width={12} tooltip="Specify coordinates ">
             Coordinates
           </InlineFormLabel>
+          {/* @ts-ignore */} 
           <Input
               value={coordinates || ""}
               onChange={evt => this.coordinatesChanged(evt.currentTarget?.value?.trim())}

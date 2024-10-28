@@ -30,4 +30,6 @@ e2e-results/
 yarn.lock
 package.lock
 
+.yarn/
+.yarnrc.yml
 

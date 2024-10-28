@@ -137,7 +137,7 @@ cd datasource/plugin
 Install the required dependencies:
 
 ```
-yarn install --ignore-engines
+yarn install
 ```
 
 Then build the plugin:

@@ -120,6 +120,7 @@ export class GraphQueryEditor extends PureComponent<NodeGraphProps, Readonly<{}>
             <InlineFormLabel width={12} tooltip="Label for the complement of the selected arc color property">
               Arc color complement
             </InlineFormLabel>
+            {/* @ts-ignore */} 
             <Input
               value={arcColorComplementLabel}
               onChange={evt => this.props.onArcColorComplementChanged(evt.currentTarget.value?.trim() || "")}
