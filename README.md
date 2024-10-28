@@ -13,8 +13,8 @@ The following instructions describe one way to spin up a Grafana instance in a D
 Download the released datasource plugin, decompress it and run Grafana in a Docker containers:
 
 ```bash
-curl -L https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.0.0/ngsild-grafana-datasource-1.0.0.tgz --output ngsild-grafana-datasource-1.0.0.tgz
-tar -zxvf ngsild-grafana-datasource-1.0.0.tgz
+curl -L https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.0/ngsild-grafana-datasource-1.1.0.tgz --output ngsild-grafana-datasource-1.1.0.tgz
+tar -zxvf ngsild-grafana-datasource-1.1.0.tgz
 MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 \
     -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro \
     -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins \
