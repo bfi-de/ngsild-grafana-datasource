@@ -162,7 +162,7 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
       ngsildOptionsParam.push("temporalValues"); // make sure to query the simplified temporal representation
       if (query.aggrMethod) {
         ngsildOptionsParam.push("aggregatedValues"); // 
-        endpoint = JsUtils.appendQueryParam(endpoint, "aggrMethod=" + query.aggrMethod);
+        endpoint = JsUtils.appendQueryParam(endpoint, "aggrMethods=" + query.aggrMethod);
         if (query.aggrPeriodDuration)
           {endpoint = JsUtils.appendQueryParam(endpoint, "aggrPeriodDuration=" + query.aggrPeriodDuration);}
       }
