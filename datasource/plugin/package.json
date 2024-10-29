@@ -1,6 +1,6 @@
 {
   "name": "ngsild-grafana-datasource",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A datasource plugin for NGSI-LD brokers",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
