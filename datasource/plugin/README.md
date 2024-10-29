@@ -4,10 +4,10 @@ A Grafana datasource for FIWARE context brokers. Supports temporal, geo and grap
 
 ## Run with Grafana
 
-For a test setup, extract the .tgz file in the desired directory and execute the following shell command in the same folder (Docker must be running):
+For a test setup, extract the .zip file in the desired directory and execute the following shell command in the same folder (Docker must be running):
 
 ```bash
-MSYS_NO_PATHCONV=1  docker run --rm -d --name grafana-dev -p 3000:3000 -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_DOMAIN=localhost grafana/grafana:latest
+MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_DOMAIN=localhost grafana/grafana:latest
 ```
 
 Create a new data source at http://localhost:3000/datasources/new. Filter for ngsild and select the NGSI-LD datasource. On the configuration page for the plugin, enter the URLs of the context provider, NGSI-LD broker and the temporal endpoint. With Docker Desktop on Windows the hostname *host.docker.internal* refers to the internal IP address of the host, which can be convenient if the mentioned services run on the host, too.
@@ -21,7 +21,7 @@ A complete test scenario with preconfigured sample data in the context broker, p
 1. Install dependencies
 
    ```bash
-   yarn install --ignore-engines
+   yarn install
    ```
 
 2. Build plugin in development mode or run in watch mode
@@ -42,16 +42,21 @@ A complete test scenario with preconfigured sample data in the context broker, p
    yarn build
    ```
 
-4. Pack plugin after building
+4. Pack plugin after building (adapt version)
 
    ```bash
    cp -r dist ngsild-grafana-datasource
-   tar -czvf ngsild-grafana-datasource-1.0.0.tgz ngsild-grafana-datasource
+   zip ngsild-grafana-datasource-1.x.y.zip ngsild-grafana-datasource -r
    rm -rf ngsild-grafana-datasource
    ```
-   Adapt the version number.
 
+   Optional: validate the content of the archive: 
 
+   ```bash
+   zipinfo ngsild-grafana-datasource-1.x.y.zip
+   ```
+   
+   It should contain a subfolder *ngsild-grafana-datasource* and among others the files *module.js*, *plugin.json*, etc.
 
 ## Learn more
 

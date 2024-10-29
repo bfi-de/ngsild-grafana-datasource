@@ -6,6 +6,8 @@ Zenodo link: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7428995.svg)](h
 
 ## Getting started
 
+### Alternative 1: download the released plugin
+
 The datasource plugin is available as a .tgz file from the releases: https://github.com/bfi-de/ngsild-grafana-datasource/releases. 
 
 The following instructions describe one way to spin up a Grafana instance in a Docker container with the datasource plugin loaded. It is not required to clone the git repository, but configuration, creation of dashboards and the setup of the NGSI-LD context broker need to be done separately. For a sample scenario with preconfigured datasource and plugins see [Run git sample scenario](#run-git-sample-scenario) below.
@@ -28,6 +30,34 @@ MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 \
 Create a new data source at http://localhost:3000/datasources/new. Filter for *ngsild* and select the NGSI-LD datasource. On the configuration page for the plugin, enter the URLs of the context provider, NGSI-LD broker and the temporal endpoint. With Docker Desktop on Windows the hostname *host.docker.internal* refers to the internal IP address of the host, which can be convenient if the mentioned services run on the host, too.
 
 To stop Grafana, run `docker stop grafana-dev`. 
+
+### Alternative 2: use the Grafana CLI
+
+An alternative way to install the plugin is via the Grafana CLI. Note that the plugin is currently unsigned and installation of this unsigned plugin must be explicitly enabled. The installation command is
+
+```bash
+grafana cli --pluginUrl https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.0/ngsild-grafana-datasource-1.1.0.zip plugins install ngsild-grafana-datasource
+```
+
+Complete instructions for a dev scenario with whitelisted unsigned plugin id:
+
+Step 1) Run Grafana:
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 -e GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=ngsild-grafana-datasource -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_DOMAIN=localhost grafana/grafana:latest
+```
+
+Step 2) Install the plugin in the Docker container:
+
+```bash
+docker exec grafana-dev grafana cli --pluginUrl https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.0/ngsild-grafana-datasource-1.1.0.zip plugins install ngsild-grafana-datasource
+```
+
+Step 3) Restart Grafana container:
+
+```bash
+docker restart grafana-dev
+```
 
 ## Run git sample scenario
 
