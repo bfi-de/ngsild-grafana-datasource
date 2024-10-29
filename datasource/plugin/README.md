@@ -21,25 +21,25 @@ A complete test scenario with preconfigured sample data in the context broker, p
 1. Install dependencies
 
    ```bash
-   yarn install
+   npm install
    ```
 
 2. Build plugin in development mode or run in watch mode
 
    ```bash
-   yarn dev
+   npm run dev
    ```
 
    or
 
    ```bash
-   yarn watch
+   npm run watch
    ```
 
 3. Build plugin in production mode
 
    ```bash
-   yarn build
+   npm run build
    ```
 
 4. Pack plugin after building (adapt version)

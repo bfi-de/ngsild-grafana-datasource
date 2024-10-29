@@ -7,8 +7,7 @@
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
-    "sign": "grafana-toolkit plugin:sign",
-    "start": "yarn watch"
+    "sign": "grafana-toolkit plugin:sign"
   },
   "author": "Christoph Nölle (BFI)",
   "license": "Apache-2.0",
@@ -22,9 +21,10 @@
   },
   "engines": {
     "node": ">=18",
-    "yarn": ">=4"
+    "npm": ">=9"
   },
   "dependencies": {
     "@grafana/runtime": "^9.3.1"
-  }
+  },
+  "packageManager": "npm@10.9.0"
 }

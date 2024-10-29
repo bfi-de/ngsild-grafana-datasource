@@ -136,6 +136,28 @@ By selecting the *node graph* query type the datasource provides input data for 
 
 Use either the Docker workflow or the Node.js workflow.
 
+**Node.js workflow**
+
+Switch to the *plugin* directory:
+
+```
+cd datasource/plugin
+```
+
+Install the required dependencies:
+
+```
+npm install
+```
+
+Then build the plugin:
+
+```
+npm run dev
+```
+
+(or `npm run build`)
+
 **Docker workflow**
 
 Switch to the *datasource* directory:
@@ -154,26 +176,6 @@ Then build the plugin:
 
 ```
 ./build.sh
-```
-
-**Node.js workflow**
-
-Switch to the *plugin* directory:
-
-```
-cd datasource/plugin
-```
-
-Install the required dependencies:
-
-```
-yarn install
-```
-
-Then build the plugin:
-
-```
-yarn dev
 ```
 
 

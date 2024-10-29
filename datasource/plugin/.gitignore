@@ -28,7 +28,7 @@ e2e-results/
 
 *.tgz
 yarn.lock
-package.lock
+package-lock.json
 
 .yarn/
 .yarnrc.yml
