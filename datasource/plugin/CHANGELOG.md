@@ -14,4 +14,8 @@ Initial release.
 
 * Fix `attrMethods` parameter: [#6](https://github.com/bfi-de/ngsild-grafana-datasource/issues/6)
 
+# 1.1.2
 
+* Multi-tenant support (datasource setting) and scope query: [#7](https://github.com/bfi-de/ngsild-grafana-datasource/issues/7)
+* Toggle between *options* (legacy, widely supported) and *format* (new, yet unsupported) parameters
+* Hide unsupported authentication settings in direct mode: [#3](https://github.com/bfi-de/ngsild-grafana-datasource/issues/3)

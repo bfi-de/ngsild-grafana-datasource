@@ -15,8 +15,8 @@ The following instructions describe one way to spin up a Grafana instance in a D
 Download the released datasource plugin, decompress it and run Grafana in a Docker containers:
 
 ```bash
-curl -L https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.1/ngsild-grafana-datasource-1.1.1.tgz --output ngsild-grafana-datasource-1.1.1.tgz
-tar -zxvf ngsild-grafana-datasource-1.1.1.tgz
+curl -L https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.2/ngsild-grafana-datasource-1.1.2.tgz --output ngsild-grafana-datasource-1.1.2.tgz
+tar -zxvf ngsild-grafana-datasource-1.1.2.tgz
 MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 \
     -v $(pwd)/ngsild-grafana-datasource:/var/lib/grafana/plugins/ngsild-grafana-datasource:ro \
     -e GF_PATHS_PLUGINS=/var/lib/grafana/plugins \
@@ -36,7 +36,7 @@ To stop Grafana, run `docker stop grafana-dev`.
 An alternative way to install the plugin is via the Grafana CLI. Note that the plugin is currently unsigned and installation of this unsigned plugin must be explicitly enabled. The installation command is
 
 ```bash
-grafana cli --pluginUrl https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.1/ngsild-grafana-datasource-1.1.1.zip plugins install ngsild-grafana-datasource
+grafana cli --pluginUrl https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.2/ngsild-grafana-datasource-1.1.2.zip plugins install ngsild-grafana-datasource
 ```
 
 Complete instructions for a dev scenario with whitelisted unsigned plugin id:
@@ -50,7 +50,7 @@ MSYS_NO_PATHCONV=1 docker run --rm -d --name grafana-dev -p 3000:3000 -e GF_PLUG
 Step 2) Install the plugin in the Docker container:
 
 ```bash
-docker exec grafana-dev grafana cli --pluginUrl https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.1/ngsild-grafana-datasource-1.1.1.zip plugins install ngsild-grafana-datasource
+docker exec grafana-dev grafana cli --pluginUrl https://github.com/bfi-de/ngsild-grafana-datasource/releases/download/v1.1.2/ngsild-grafana-datasource-1.1.2.zip plugins install ngsild-grafana-datasource
 ```
 
 Step 3) Restart Grafana container:

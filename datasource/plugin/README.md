@@ -42,7 +42,8 @@ A complete test scenario with preconfigured sample data in the context broker, p
    npm run build
    ```
 
-4. Pack plugin after building (adapt version)
+4. Pack plugin after building (adapt version; update CHANGELOG.md before)
+
 
    ```bash
    cp -r dist ngsild-grafana-datasource
