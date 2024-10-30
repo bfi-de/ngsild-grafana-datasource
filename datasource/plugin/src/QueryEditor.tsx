@@ -273,6 +273,11 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
     onChange({ ...query, customQuery: q?.trim() || ""});
   };
 
+  onScopeQueryChange = (q: string|undefined) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, scopeQuery: q?.trim() || ""});
+  };
+
   onLongEntityNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onChange, query } = this.props;
     onChange({ ...query, useLongEntityName: event.currentTarget.checked });
@@ -318,7 +323,7 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
 
   render() {
     const query = defaults(this.props.query, defaultQuery);
-    const { entityId, entityType, attributes, namePattern, entityName, useLongEntityName, queryType, customQuery } = query;
+    const { entityId, entityType, attributes, namePattern, entityName, useLongEntityName, queryType, customQuery, scopeQuery } = query;
     const queryType0: NgsildQueryType = queryTypeForValue(queryType)!;
     const namePattern0: NamePattern = namePatternFromValue(namePattern)
     const entityName0: string = !!entityName ? entityName : (useLongEntityName ? "id" : "id_short");
@@ -459,6 +464,21 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
                 onChange={evt => this.onCustomQueryChange(evt.currentTarget.value)}
                 type="string"
                 placeholder={"speed>50;brandName!=\"Mercedes\""}
+                width={22}
+              ></Input>
+            </div>
+          </div>
+          <div className="gf-form-inline">
+            <div className="gf-form">
+              <InlineFormLabel width={12} tooltip="A scope query string conforming to the NGSI-LD scope query language, such as '/Madrid/Centro,/Madrid/Cortes'. Formerly called Fiware-ServicePath.">
+                Scope query
+              </InlineFormLabel>
+              {/* @ts-ignore */} 
+              <Input
+                value={scopeQuery || ""}
+                onChange={evt => this.onScopeQueryChange(evt.currentTarget.value)}
+                type="string"
+                placeholder={"/Madrid/Centro,/Madrid/Cortes"}
                 width={22}
               ></Input>
             </div>

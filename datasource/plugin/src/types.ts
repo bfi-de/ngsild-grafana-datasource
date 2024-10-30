@@ -163,6 +163,10 @@ export interface NgsildQuery extends DataQuery {
    * A query adhering to the NGSI-LD query language
    */
   customQuery?: string;
+  /**
+   * A query adhering to the NGSI-LD scope query language
+   */
+  scopeQuery?: string;
 
   /**
    * Filter for geometric properties.
@@ -260,6 +264,16 @@ export interface NgsildSourceOptions extends DataSourceJsonData {
   contextUrl?: string;
   timeseriesUrl?: string;
   tokenUrl?: string;
+  /**
+   * NGSILD-Tenant header
+   */
+  tenant?: string;
+  /**
+   * Specify whether to use "format" of "options" parameter.
+   * Currently, "options" is the default, at some point the spec-conformant "format" should become the default,
+   * once supported by the main brokers.
+   */
+  formatParameter?: "format"|"options";
   /**
    * Determines how to execute a test request; orion uses the custom /version endpoint, generic uses /types
    */

@@ -26,6 +26,8 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
   private readonly contextUrl: string; // http://context/ngsi-context.jsonld
   private readonly contextLinkHeader: string; // <http://context/ngsi-context.jsonld>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json
   private readonly flavour: "generic"|"orion";
+  private readonly tenant: string|undefined;
+  private readonly formatParameter: "options"|"format"; // changed from options to format between spec versions ...
 
   constructor(instanceSettings: DataSourceInstanceSettings<NgsildSourceOptions>) {
     super(instanceSettings);
@@ -34,6 +36,8 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
       {baseUrl = JsUtils.concatPaths(baseUrl, "/ngsi-ld/v1");}
     this.baseUrl = baseUrl;
     this.flavour = instanceSettings.jsonData?.flavour?.toLowerCase() as any || "generic";
+    this.tenant = instanceSettings.jsonData?.tenant?.trim() || undefined;
+    this.formatParameter = instanceSettings.jsonData?.formatParameter?.toLowerCase() === "format" ? "format" : "options";
     const actualTimeseriesUrl: string = instanceSettings.jsonData?.timeseriesUrl || "";
     // note: the route alias "temporal" for instanceSettings.jsonData.timeseriesUrl in the backend proxy 
     // is defined in plugin.json, see https://community.grafana.com/t/grafana-datasource-backend-proxy/6861/4
@@ -249,8 +253,16 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
     }
     if (options)
       {endpoint = appendAll(endpoint, options as any, ["limit", "offset", "lastN"]);}
-    if (ngsildOptionsParam.length > 0)
-      {endpoint = JsUtils.appendQueryParam(endpoint, "options=" + ngsildOptionsParam.join(","))}
+    if (ngsildOptionsParam.length > 0) {
+      endpoint = JsUtils.appendQueryParam(endpoint, this.formatParameter + "=" + ngsildOptionsParam.join(","));
+    }
+    if (query.scopeQuery?.trim()?.length! > 0) {
+      let sq = query.scopeQuery!.trim();
+      if (!sq.startsWith("\"") && !sq.startsWith("'")) {
+        sq = "\"" + sq + "\"";
+      }
+      endpoint = JsUtils.appendQueryParam(endpoint, "scopeQ=" + sq)
+    }
     const isVersionRequest: boolean = endpoint?.startsWith("/version");
     const baseUrl = isVersionRequest ? this.baseUrl.replace("/ngsi-ld/v1", "") : 
       query.queryType === NgsildQueryType.TEMPORAL ? this.timeseriesUrl :  this.baseUrl;
@@ -266,6 +278,9 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
         Link: this.contextLinkHeader,
         Accept: "application/ld+json"
       };
+    }
+    if (this.tenant) {
+      fetchOptions.headers!["NGSILD-Tenant"] = this.tenant;
     }
     const result0: T = await NgsildDataSource.toPromise(backend.fetch(fetchOptions));
     return result0;

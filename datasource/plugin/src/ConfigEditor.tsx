@@ -23,6 +23,21 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange(options2);
   };
 
+  onTenantChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { options, onOptionsChange } = this.props;
+    const jsonData = options.jsonData;
+    const options2 = {...options, jsonData: {...jsonData, tenant: event.currentTarget.value?.trim() ||""}};
+    onOptionsChange(options2);
+  };
+
+  onFormatParameterChange = (value: SelectableValue<"format"|"options">) => {
+    const newFormatParam: "format"|"options" = value.value === "format" ? "format" : "options" 
+    const { options, onOptionsChange } = this.props;
+    const jsonData = options.jsonData;
+    const options2 = {...options, jsonData: {...jsonData, formatParameter: newFormatParam }};
+    onOptionsChange(options2);
+  };
+
   onTimeseriesUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { options, onOptionsChange } = this.props;
     const jsonData = options.jsonData;
@@ -77,6 +92,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
   render() {
     const { options } = this.props;
     const { jsonData, secureJsonFields, secureJsonData } = options;
+    const isDirectMode: boolean = options.access === "direct";
     const isAuthActive: boolean = jsonData.authType === "oauth" /*&& jsonData.tokenAuth === "tokenAuth"; */// TODO validate authType?
     const authConfigured: boolean = isAuthActive && secureJsonFields.clientId && secureJsonFields.clientSecret;
     return (
@@ -111,14 +127,42 @@ export class ConfigEditor extends PureComponent<Props, State> {
             placeholder="http://localhost:80/ngsi-context.jsonld"
           />
         </div>
+        <div className="gf-form">
+          <FormField
+            label="Tenant"
+            tooltip="Optional tenant id. Formerly called 'Fiware-Service'."
+            labelWidth={10}
+            inputWidth={20}
+            onChange={this.onTenantChange}
+            value={jsonData.tenant || ''}
+            placeholder="Tenant id"
+          />
+        </div>
         <div className="gf-form-inline">
           <div className="gf-form">
-            <InlineFormLabel width={10} tooltip="Select the access mode for the plugin.">
+            <InlineFormLabel width={10} tooltip="Select a format parameter supported by the broker. Default is 'options', which is supported by most brokers, but deprecated in the spec in favour of 'format'.">
+              Format parameter
+            </InlineFormLabel>
+            <Select
+              options={[{value: "options", title: "The legacy mode, supported by most browsers (default).", label: "options"}, 
+                {value: "format", title: "The spec-conformant parameter, not yet widely supported.", label: "format"}]}
+              value={jsonData.formatParameter || "options"}
+              onChange={this.onFormatParameterChange}
+              width={20}
+              />
+          </div>
+        </div>
+        <div className="gf-form-inline">
+          <div className="gf-form">
+            <InlineFormLabel width={10} tooltip="Select the access mode for the plugin, either sending requests to the broker through Grafana as a proxy (recommended), or directly from the browser to the broker. Note that user authentication is only supported in proxy mode.">
               Access
             </InlineFormLabel>
             <Select
-              options={[{value: "direct", title: "Send broker requests from the browser", label: "direct"}, {value: "proxy", title: "Send broker requests via the backend", label: "proxy"}]}
-              value={options.access || "direct"}
+              options={[
+                {value: "proxy", title: "Send broker requests via the backend (recommended)", label: "proxy"},
+                {value: "direct", title: "Send broker requests from the browser (not recommended)", label: "direct"}
+              ]}
+              value={options.access || "proxy"}
               onChange={this.onAccessModeChange}
               width={20}
               />
@@ -137,66 +181,69 @@ export class ConfigEditor extends PureComponent<Props, State> {
               />
           </div>
         </div>
-        <div className="gf-form-inline">
-          <div className="gf-form">
-            {/* @ts-ignore */} 
-            <Checkbox
-              checked={isAuthActive}
-              onChange={c => this.onAuthStatusChange(c.currentTarget.checked)}
-              label="Authentication active?"
-              title="If checked, OAuth 2.0 authentication will be enabled for the datasource. Use with a context broker secured by means of OAuth."
-            ></Checkbox>
-          </div>
-        </div>
-        {isAuthActive &&
+        {!isDirectMode &&
           <React.Fragment>
             <div className="gf-form-inline">
               <div className="gf-form">
-                <InlineFormLabel width={10} tooltip="OAuth token server">
-                  OAuth token URL
-                </InlineFormLabel>
                 {/* @ts-ignore */} 
-                <Input
-                  value={jsonData.tokenUrl || ""}
-                  placeholder={"https://my.auth.server.com/v1/oauth/token"}
-                  onChange={evt => this.onTokenServerChange(evt.currentTarget.value?.trim())}
-                  title="OAuth token server."
-                ></Input>
+                <Checkbox
+                  checked={isAuthActive}
+                  onChange={c => this.onAuthStatusChange(c.currentTarget.checked)}
+                  label="Authentication active?"
+                  title="If checked, OAuth 2.0 authentication will be enabled for the datasource. Use with a context broker secured by means of OAuth."
+                ></Checkbox>
               </div>
             </div>
-            <div className="gf-form-inline">
-              <div className="gf-form">
-                <InlineFormLabel width={10} tooltip="OAuth client id. This must be configured in the authentication server, too.">
-                  Client id
-                </InlineFormLabel>
-                {/* @ts-ignore */} 
-                <Input
-                  value={secureJsonData?.clientId || ""}
-                  placeholder={authConfigured ? "Value configured" : "No client id configured yet"}
-                  onChange={evt => this.onClientIdChange(evt.currentTarget.value?.trim())}
-                  title="OAuth client id. This must be configured in the authentication server."
-                  type="password"
-                ></Input>
-              </div>
-            </div>
-            <div className="gf-form-inline">
-              <div className="gf-form">
-                <InlineFormLabel width={10} tooltip="OAuth client secret. This must be configured in the authentication server, too.">
-                  Client secret
-                </InlineFormLabel>
-                {/* @ts-ignore */} 
-                <Input
-                  value={secureJsonData?.clientSecret || ""}
-                  placeholder={authConfigured ? "Value configured" : "No client secret configured yet"}
-                  onChange={evt => this.onClientSecretChange(evt.currentTarget.value?.trim())}
-                  title="OAuth client secret. This must be configured in the authentication server, too."
-                  type="password"
-                ></Input>
-              </div>
-            </div>
+            {isAuthActive &&
+              <React.Fragment>
+                <div className="gf-form-inline">
+                  <div className="gf-form">
+                    <InlineFormLabel width={10} tooltip="OAuth token server">
+                      OAuth token URL
+                    </InlineFormLabel>
+                    {/* @ts-ignore */} 
+                    <Input
+                      value={jsonData.tokenUrl || ""}
+                      placeholder={"https://my.auth.server.com/v1/oauth/token"}
+                      onChange={evt => this.onTokenServerChange(evt.currentTarget.value?.trim())}
+                      title="OAuth token server."
+                    ></Input>
+                  </div>
+                </div>
+                <div className="gf-form-inline">
+                  <div className="gf-form">
+                    <InlineFormLabel width={10} tooltip="OAuth client id. This must be configured in the authentication server, too.">
+                      Client id
+                    </InlineFormLabel>
+                    {/* @ts-ignore */} 
+                    <Input
+                      value={secureJsonData?.clientId || ""}
+                      placeholder={authConfigured ? "Value configured" : "No client id configured yet"}
+                      onChange={evt => this.onClientIdChange(evt.currentTarget.value?.trim())}
+                      title="OAuth client id. This must be configured in the authentication server."
+                      type="password"
+                    ></Input>
+                  </div>
+                </div>
+                <div className="gf-form-inline">
+                  <div className="gf-form">
+                    <InlineFormLabel width={10} tooltip="OAuth client secret. This must be configured in the authentication server, too.">
+                      Client secret
+                    </InlineFormLabel>
+                    {/* @ts-ignore */} 
+                    <Input
+                      value={secureJsonData?.clientSecret || ""}
+                      placeholder={authConfigured ? "Value configured" : "No client secret configured yet"}
+                      onChange={evt => this.onClientSecretChange(evt.currentTarget.value?.trim())}
+                      title="OAuth client secret. This must be configured in the authentication server, too."
+                      type="password"
+                    ></Input>
+                  </div>
+                </div>
+              </React.Fragment>
+            }
           </React.Fragment>
         }
-
       </div>
     );
   }
