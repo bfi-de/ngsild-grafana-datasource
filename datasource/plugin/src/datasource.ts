@@ -13,7 +13,7 @@ import { getBackendSrv, BackendSrv, FetchResponse, BackendSrvRequest } from "@gr
 
 import { NgsildQuery, NgsildSourceOptions, defaultQuery, NgsildQueryType, NamePattern, namePatternFromValue } from './types';
 import { JsUtils } from 'utils';
-import { Measurement, EntityTemporal, INVALID_ATTRIBUTES, Entity, getValue } from 'ngsildTypes';
+import { Measurement, EntityTemporal, INVALID_ATTRIBUTES, Entity, getValue, Property } from 'ngsildTypes';
 import { isNumber } from 'lodash';
 import { GeoHandler } from 'GeoHandler';
 import { NodeGraphHandler } from 'NodeGraphHandler';
@@ -28,6 +28,7 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
   private readonly flavour: "generic"|"orion";
   private readonly tenant: string|undefined;
   private readonly formatParameter: "options"|"format"; // changed from options to format between spec versions ...
+  private readonly avoidSimplifiedTemporalFormat: boolean;
 
   constructor(instanceSettings: DataSourceInstanceSettings<NgsildSourceOptions>) {
     super(instanceSettings);
@@ -38,6 +39,7 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
     this.flavour = instanceSettings.jsonData?.flavour?.toLowerCase() as any || "generic";
     this.tenant = instanceSettings.jsonData?.tenant?.trim() || undefined;
     this.formatParameter = instanceSettings.jsonData?.formatParameter?.toLowerCase() === "format" ? "format" : "options";
+    this.avoidSimplifiedTemporalFormat = !!instanceSettings.jsonData.avoidSimplifiedTemporalFormat;
     const actualTimeseriesUrl: string = instanceSettings.jsonData?.timeseriesUrl || "";
     // note: the route alias "temporal" for instanceSettings.jsonData.timeseriesUrl in the backend proxy 
     // is defined in plugin.json, see https://community.grafana.com/t/grafana-datasource-backend-proxy/6861/4
@@ -100,7 +102,7 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
         if (result[attribute].type === "Relationship")
           {continue;}
         const attrName: string = namePattern === NamePattern.ENTITY_NAME ? name : name + attribute
-        if (result[attribute].values) {
+        if (!this.avoidSimplifiedTemporalFormat && result[attribute].values) {
           const data: Measurement[] = result[attribute].values;
           const field = { 
             name:  attrName, 
@@ -116,6 +118,32 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
             refId: query.refId,
             fields: [time, field]
           }));
+        } else if (this.avoidSimplifiedTemporalFormat && query.queryType === NgsildQueryType.TEMPORAL) {
+          const timeProperty = query.timeProperty || "observedAt";
+          const data: Array<Property<any>> = result[attribute];
+          if (!Array.isArray(data)) {
+            throw new Error("Temporal property array expected for attribute " + attribute);
+          }
+          if (data.length > 0) {
+            if (!(timeProperty in data[0])) {
+              throw new Error("Temporal representation is missing the expected time attribute " + timeProperty 
+                  + " for attribute " + attribute);
+            }
+            const field = { 
+              name:  attrName, 
+              values: data.map(getValue), 
+              type: FieldType.number 
+            };
+            const time = { 
+              name: "Time", 
+              values: data.map(point => new Date(point[timeProperty]!).getTime()),
+              type: FieldType.time 
+            };
+            frames.push(new MutableDataFrame({
+              refId: query.refId,
+              fields: [time, field]
+            }));
+          }
         } else if (result[attribute].value !== undefined) {
           let value: any = result[attribute].value;
           if (typeof value === "object" && "@value" in value)
@@ -163,13 +191,16 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
       endpoint = "/temporal/entities";
       if (query.entityId)
         {endpoint += "/" + encodeURIComponent(query.entityId);}
-      ngsildOptionsParam.push("temporalValues"); // make sure to query the simplified temporal representation
+      if (!this.avoidSimplifiedTemporalFormat) 
+        {ngsildOptionsParam.push("temporalValues");} // make sure to query the simplified temporal representation
       if (query.aggrMethod) {
         ngsildOptionsParam.push("aggregatedValues"); // 
         endpoint = JsUtils.appendQueryParam(endpoint, "aggrMethods=" + query.aggrMethod);
         if (query.aggrPeriodDuration)
           {endpoint = JsUtils.appendQueryParam(endpoint, "aggrPeriodDuration=" + query.aggrPeriodDuration);}
       }
+      if (query.timeProperty && query.timeProperty !== "observedAt")
+        {endpoint = JsUtils.appendQueryParam(endpoint, "timeproperty=" + query.timeProperty);}
       break;
     // the /version endpoint is actually orion-specific and can only be used with flavour === "orion"
     // since we use this for testing the datasource only it is ok to simply use some random other endpoint

@@ -38,6 +38,14 @@ export class ConfigEditor extends PureComponent<Props, State> {
     onOptionsChange(options2);
   };
 
+  onTemporalRepChange = (value: SelectableValue<"simplified"|"expanded">) => {
+    const avoidSimplifiedRep: boolean = value.value === "expanded";
+    const { options, onOptionsChange } = this.props;
+    const jsonData = options.jsonData;
+    const options2 = {...options, jsonData: {...jsonData, avoidSimplifiedTemporalFormat: avoidSimplifiedRep }};
+    onOptionsChange(options2);
+  };
+
   onTimeseriesUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { options, onOptionsChange } = this.props;
     const jsonData = options.jsonData;
@@ -100,7 +108,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         <div className="gf-form">
           <FormField
             label="Context broker URL"
-            labelWidth={10}
+            labelWidth={12}
             inputWidth={20}
             onChange={this.onUrlChange}
             value={options.url || ''}
@@ -110,7 +118,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         <div className="gf-form">
           <FormField
             label="Temporal broker URL"
-            labelWidth={10}
+            labelWidth={12}
             inputWidth={20}
             onChange={this.onTimeseriesUrlChange}
             value={jsonData.timeseriesUrl || ''}
@@ -120,7 +128,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         <div className="gf-form">
           <FormField
             label="Context URL"
-            labelWidth={10}
+            labelWidth={12}
             inputWidth={20}
             onChange={this.onContextUrlChange}
             value={jsonData.contextUrl || ''}
@@ -131,7 +139,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
           <FormField
             label="Tenant"
             tooltip="Optional tenant id. Formerly called 'Fiware-Service'."
-            labelWidth={10}
+            labelWidth={12}
             inputWidth={20}
             onChange={this.onTenantChange}
             value={jsonData.tenant || ''}
@@ -140,7 +148,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         </div>
         <div className="gf-form-inline">
           <div className="gf-form">
-            <InlineFormLabel width={10} tooltip="Select a format parameter supported by the broker. Default is 'options', which is supported by most brokers, but deprecated in the spec in favour of 'format'.">
+            <InlineFormLabel width={12} tooltip="Select a format parameter supported by the broker. Default is 'options', which is supported by most brokers, but deprecated in the spec in favour of 'format'.">
               Format parameter
             </InlineFormLabel>
             <Select
@@ -154,7 +162,21 @@ export class ConfigEditor extends PureComponent<Props, State> {
         </div>
         <div className="gf-form-inline">
           <div className="gf-form">
-            <InlineFormLabel width={10} tooltip="Select the access mode for the plugin, either sending requests to the broker through Grafana as a proxy (recommended), or directly from the browser to the broker. Note that user authentication is only supported in proxy mode.">
+            <InlineFormLabel width={12} tooltip="Select temporal representation. Default: 'simplified', which compresses timeseries into an array of [value, timestamp] pairs.">
+              Temporal representation
+            </InlineFormLabel>
+            <Select
+              options={[{value: "simplified", title: "The default simplified mode, represents timeseries data efficiently as array of [value, timestamp] pairs.", label: "simplified"}, 
+                {value: "expanded", title: "Represents timeseries data as array of property objects. Potentially inefficient for large arrays.", label: "expanded"}]}
+              value={jsonData.avoidSimplifiedTemporalFormat ? "expanded" : "simplified"}
+              onChange={this.onTemporalRepChange}
+              width={20}
+              />
+          </div>
+        </div>
+        <div className="gf-form-inline">
+          <div className="gf-form">
+            <InlineFormLabel width={12} tooltip="Select the access mode for the plugin, either sending requests to the broker through Grafana as a proxy (recommended), or directly from the browser to the broker. Note that user authentication is only supported in proxy mode.">
               Access
             </InlineFormLabel>
             <Select
@@ -170,7 +192,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         </div>
         <div className="gf-form-inline">
           <div className="gf-form">
-            <InlineFormLabel width={10} tooltip="Select the NGSI-LD broker type. This is not too important, it only determines how the test request to check if the datasource is alive is formed.">
+            <InlineFormLabel width={12} tooltip="Select the NGSI-LD broker type. This is not too important, it only determines how the test request to check if the datasource is alive is formed.">
               Flavour
             </InlineFormLabel>
             <Select
@@ -198,7 +220,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
               <React.Fragment>
                 <div className="gf-form-inline">
                   <div className="gf-form">
-                    <InlineFormLabel width={10} tooltip="OAuth token server">
+                    <InlineFormLabel width={12} tooltip="OAuth token server">
                       OAuth token URL
                     </InlineFormLabel>
                     {/* @ts-ignore */} 
@@ -212,7 +234,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
                 </div>
                 <div className="gf-form-inline">
                   <div className="gf-form">
-                    <InlineFormLabel width={10} tooltip="OAuth client id. This must be configured in the authentication server, too.">
+                    <InlineFormLabel width={12} tooltip="OAuth client id. This must be configured in the authentication server, too.">
                       Client id
                     </InlineFormLabel>
                     {/* @ts-ignore */} 
@@ -227,7 +249,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
                 </div>
                 <div className="gf-form-inline">
                   <div className="gf-form">
-                    <InlineFormLabel width={10} tooltip="OAuth client secret. This must be configured in the authentication server, too.">
+                    <InlineFormLabel width={12} tooltip="OAuth client secret. This must be configured in the authentication server, too.">
                       Client secret
                     </InlineFormLabel>
                     {/* @ts-ignore */} 

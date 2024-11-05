@@ -3,12 +3,14 @@ import { units } from "units";
 /* [value, iso datetime] */
 export type Measurement = [number, string];
 
-export type EntityTemporal = Omit<{
+export type TemporalPropertyKey = "observedAt"|"createdAt"|"modifiedAt"|"deletedAt";
+
+export type EntityTemporal<V = any> = Omit<{
     [attribute: string]: {
-        type: "Property"|"Relationship"; // TODO other possible?
+        type: "Property"|"Relationship";
         values: Measurement[];
-    };
-}, "id"|"type"|"@context">&{
+    } | Array<Property<V>>;
+}, "id"|"type"|"@context"|TemporalPropertyKey>&{
     id: string; // the entity id
     type: string; // entity type
     "@context": any;
@@ -22,6 +24,11 @@ export interface EntityType {
 
 export type Value<V> = V|{"@value": V};
 
+export type TemporalProperty = {
+    /** The string value is actually of Date format */
+    [temporal in TemporalPropertyKey]?: string;
+}
+
 // the type is not exact, we would need an omit here around the first type, but this leads to an error 
 // due to circular references; furthermore non-rectified properties look simpler than that. 
 // This is rather a first order approximation.
@@ -30,10 +37,10 @@ export type Property<V=any> = {
 } & {
     type: "Property";
     value: Value<V>;
-    observedAt?: string;
     unitCode?: string;
     datasetId?: string;
-}
+}&TemporalProperty;
+
 export type Relationship = {
     [attribute: string]: Property|Relationship|Property[]|Relationship[];
 } & {
@@ -41,7 +48,7 @@ export type Relationship = {
     object: string;
     observedAt?: string;
     datasetId?: string;
-}
+}&TemporalProperty;
 
 export const getValue = <V>(property: Property<V>|Array<Property<V>>): any => {
     if (property === undefined || property === null)

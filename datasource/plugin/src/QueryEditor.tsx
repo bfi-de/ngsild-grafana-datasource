@@ -5,7 +5,7 @@ import { InlineFormLabel, Segment, MultiSelect, Checkbox, Select, Input } from '
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { NgsildDataSource } from './datasource';
 import { defaultQuery, NgsildSourceOptions, NgsildQuery, NgsildQueryType, queryTypeForValue, TimeseriesAggregationMethod, NamePattern, namePatternFromValue } from './types';
-import {  Entity, EntityType, INVALID_ATTRIBUTES } from 'ngsildTypes';
+import {  Entity, EntityType, INVALID_ATTRIBUTES, TemporalPropertyKey } from 'ngsildTypes';
 import { GraphQueryEditor } from 'components/GraphQueryEditor';
 import { TsAggregationEditor } from 'components/TimeseriesAggregationEditor';
 import { AggregationPeriod } from 'AggregationHelper';
@@ -42,6 +42,12 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
             title: "The datapoint label is given by the entity name." },
     {value: NamePattern.ATTRIBUTE, label: "Attribute", description: "Attribute name",
             title: "The datapoint label is given by the attribute name." },
+  ];
+  private static readonly TEMPORAL_PROPERTIES: Array<SelectableValue<TemporalPropertyKey>> = [
+    {value: "observedAt", label: "observedAt", description: "observedAt, the default measurement timestamp.", title: "This is usually the best choice, representing e.g. the measurment timestamp."},
+    {value: "createdAt", label: "createdAt", description: "Creation timestamp.", title: "Creation timestamp of the entry."},
+    {value: "modifiedAt", label: "modifiedAt", description: "Modification timestamp", title: "Timestamp of last modification."},
+    {value: "deletedAt", label: "deletedAt", description: "Deletion timestamp", title: "Deletion timestamp of the entry."},
   ];
 
   constructor(props: Props) {
@@ -268,6 +274,11 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
 
   };
 
+  onTemporalPropertyChange = (event: SelectableValue<TemporalPropertyKey>) => {
+    const { onChange, query } = this.props;
+    onChange({ ...query, timeProperty: event?.value?.valueOf() as TemporalPropertyKey || "observedAt"});
+  };
+
   onCustomQueryChange = (q: string|undefined) => {
     const { onChange, query } = this.props;
     onChange({ ...query, customQuery: q?.trim() || ""});
@@ -485,13 +496,30 @@ export class QueryEditor extends PureComponent<Props, QueryState> {
           </div>
           {namePatternSelector}
           {entityNameFieldSelector}
+          {queryType === NgsildQueryType.TEMPORAL && 
+            <React.Fragment>
+              <div className="gf-form-inline">
+              <div className="gf-form">
+                <InlineFormLabel width={12} tooltip="Time property to query.">
+                  Time property
+                </InlineFormLabel>
+                <Select<TemporalPropertyKey>
+                  options={QueryEditor.TEMPORAL_PROPERTIES}
+                  value={query.timeProperty || "observedAt"}
+                  onChange={this.onTemporalPropertyChange}
+                  width={22}
+                  ></Select>
+              </div>
+            </div>
+            </React.Fragment>
+          }
         </div>  
         <div>
           {geoEditor}
         </div>  
         <div>
           {graphEditor}
-        </div>  
+        </div>
         <div>
           {temporalAggregationEditor}
         </div>

@@ -1,4 +1,5 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
+import { TemporalPropertyKey } from 'ngsildTypes';
 // TODO cf https://github.com/easy-global-market/grafana-ngsild-plugin/blob/master/src/types.ts
 
 export enum NgsildQueryType {
@@ -195,7 +196,7 @@ export interface NgsildQuery extends DataQuery {
     *   - [8,40] (for Point)
     *   - [[[100.0,0.0],[101.0,0.0],[101.0,1.0],[100.0,1.0],[100.0,0.0]]] (for Polygon)
     */
-    coordinates?: string;
+  coordinates?: string;
   /**
    * Filter for geometric properties. Default: "location". Typical examples:
    *   - location
@@ -203,6 +204,11 @@ export interface NgsildQuery extends DataQuery {
    *   - operationSpace
    */
   geoproperty?: string; 
+
+  /**
+   * Defaults to "observedAt". Relevant for query type TEMPORAL.
+   */
+  timeProperty?: TemporalPropertyKey;
 
   /**
    * Only relevant for queryType TEMPORAL
@@ -274,6 +280,10 @@ export interface NgsildSourceOptions extends DataSourceJsonData {
    * once supported by the main brokers.
    */
   formatParameter?: "format"|"options";
+  /**
+   * Usually temporal data is requested in simplified temporal format, but this can be changed via this parameter.
+   */
+  avoidSimplifiedTemporalFormat?: boolean;
   /**
    * Determines how to execute a test request; orion uses the custom /version endpoint, generic uses /types
    */
