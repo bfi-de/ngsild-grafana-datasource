@@ -93,7 +93,10 @@ services:
     container_name: mintaka
     restart: always
     depends_on:
-      - timescale
+      timescale:
+        condition: service_healthy
+      context:
+        condition: service_started
     environment:
       - MICRONAUT_SERVER_PORT=8083
       - ENDPOINTS_ALL_PORT=8084  # Management port
@@ -111,6 +114,11 @@ services:
         - "8083"
     ports:
         - "8083:8083"
+    healthcheck:
+      test: curl --fail -s http://mintaka:8084/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
         
   context:
     image: httpd:latest

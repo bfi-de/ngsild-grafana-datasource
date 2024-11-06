@@ -253,7 +253,7 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
     default:
       throw new Error("Invalid query type " + query.queryType);
     }
-    if (query.entityType)
+    if (query.entityType && !query.entityId)
       {endpoint = JsUtils.appendQueryParam(endpoint, "type=" + encodeURIComponent(query.entityType));}
     if (query.attributes?.length!>0) {
       if (query.namePattern !== NamePattern.ATTRIBUTE.valueOf() && !!query.entityName && query.entityName !== "id" && query.entityName !== "id_short")
