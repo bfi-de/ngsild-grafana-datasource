@@ -24,3 +24,8 @@ Initial release.
 
 * Support other time properties than `observedAt` (i.e. `createdAt`, `modifiedAt`, `deletedAt`)
 * Support non-simplified temporal representation (configuration at datasource level): [#2](https://github.com/bfi-de/ngsild-grafana-datasource/issues/2)
+
+# 1.2.1
+
+* Fix temporal query with entity id errors [#9](https://github.com/bfi-de/ngsild-grafana-datasource/issues/9)
+* Skip type parameter in query when entity id is specified
