@@ -190,7 +190,7 @@ export class NgsildDataSource extends DataSourceApi<NgsildQuery, NgsildSourceOpt
     case NgsildQueryType.TEMPORAL:
       endpoint = "/temporal/entities";
       if (query.entityId)
-        {endpoint += "/" + encodeURIComponent(query.entityId);}
+        {endpoint += "/" + /*encodeURIComponent(*/query.entityId/*)*/;} // note: encoding does not work with the backend proxy
       if (!this.avoidSimplifiedTemporalFormat) 
         {ngsildOptionsParam.push("temporalValues");} // make sure to query the simplified temporal representation
       if (query.aggrMethod) {
